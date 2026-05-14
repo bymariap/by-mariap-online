@@ -44,3 +44,32 @@ describe('UsersService.updateMe', () => {
     expect(out.fullName).toBe('New');
   });
 });
+
+describe('UsersService admin ops', () => {
+  beforeEach(() => mockReset(prisma));
+
+  it('creates a user with hashed password', async () => {
+    (prisma.user as any).create.mockResolvedValueOnce({
+      id: 'u2', email: 'x@y.z', fullName: 'X', phone: null,
+      passwordHash: 'HASHED', roleId: 'r1', role: { name: 'admin' },
+      createdAt: new Date(), updatedAt: new Date(),
+    });
+    const out = await svc.create({
+      email: 'x@y.z', password: 'password1', fullName: 'X', roleId: 'r1',
+    });
+    const call = (prisma.user.create as jest.Mock).mock.calls[0][0];
+    expect(call.data.passwordHash).not.toBe('password1');
+    expect(call.data.passwordHash).toMatch(/^\$2[aby]\$12\$/);
+    expect(out).not.toHaveProperty('passwordHash');
+  });
+
+  it('lists users without password hashes', async () => {
+    (prisma.user as any).findMany.mockResolvedValueOnce([
+      { id: 'u1', email: 'a@b.c', fullName: 'A', phone: null,
+        passwordHash: 'h', roleId: 'r1', role: { name: 'admin' },
+        createdAt: new Date(), updatedAt: new Date() },
+    ]);
+    const out = await svc.findAll();
+    expect(out[0]).not.toHaveProperty('passwordHash');
+  });
+});
