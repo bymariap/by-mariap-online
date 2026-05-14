@@ -28,6 +28,45 @@ export class AuthService {
     return this.issueTokens(user);
   }
 
+  async refresh(refreshToken: string): Promise<TokenPair> {
+    let payload: any;
+    try {
+      payload = await this.jwt.verifyAsync(refreshToken, {
+        secret: process.env.JWT_REFRESH_SECRET,
+      });
+    } catch { throw new UnauthorizedException(); }
+
+    const row = await this.prisma.refreshToken.findUnique({
+      where: { tokenHash: sha256(refreshToken) },
+    });
+    if (!row || row.revokedAt || row.expiresAt < new Date()) {
+      throw new UnauthorizedException();
+    }
+
+    await this.prisma.refreshToken.update({
+      where: { id: row.id },
+      data: { revokedAt: new Date() },
+    });
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: payload.sub },
+      include: {
+        role: { include: { permissions: { include: { permission: true } } } },
+        specialist: true,
+      },
+    });
+    if (!user) throw new UnauthorizedException();
+    return this.issueTokens(user);
+  }
+
+  async logout(refreshToken: string | undefined): Promise<void> {
+    if (!refreshToken) return;
+    await this.prisma.refreshToken.updateMany({
+      where: { tokenHash: sha256(refreshToken), revokedAt: null },
+      data: { revokedAt: new Date() },
+    });
+  }
+
   private async issueTokens(user: any): Promise<TokenPair> {
     const permissions = user.role.permissions.map((rp: any) => rp.permission.key);
     const accessPayload = {
