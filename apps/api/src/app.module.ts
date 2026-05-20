@@ -8,6 +8,7 @@ import { JwtAuthGuard } from "./common/guards/jwt-auth.guard";
 import { PermissionsGuard } from "./common/guards/permissions.guard";
 import { UsersModule } from "./modules/users/users.module";
 import { RbacModule } from "./modules/rbac/rbac.module";
+import { SpecialistsModule } from "./modules/specialists/specialists.module";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { RbacModule } from "./modules/rbac/rbac.module";
     AuthModule,
     UsersModule,
     RbacModule,
+    SpecialistsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },
