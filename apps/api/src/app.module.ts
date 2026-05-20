@@ -7,6 +7,7 @@ import { AuthModule } from "./modules/auth/auth.module";
 import { JwtAuthGuard } from "./common/guards/jwt-auth.guard";
 import { PermissionsGuard } from "./common/guards/permissions.guard";
 import { UsersModule } from "./modules/users/users.module";
+import { RbacModule } from "./modules/rbac/rbac.module";
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UsersModule } from "./modules/users/users.module";
     PrismaModule,
     AuthModule,
     UsersModule,
+    RbacModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },

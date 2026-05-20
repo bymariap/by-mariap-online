@@ -1,6 +1,10 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { CreateRoleDto } from './dto/create-role.dto';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
+import { PrismaService } from "../../prisma/prisma.service";
+import { CreateRoleDto } from "./dto/create-role.dto";
 
 @Injectable()
 export class RbacService {
@@ -11,7 +15,9 @@ export class RbacService {
       include: { permissions: { include: { permission: true } } },
     });
     return rows.map((r) => ({
-      id: r.id, name: r.name, description: r.description,
+      id: r.id,
+      name: r.name,
+      description: r.description,
       permissions: r.permissions.map((rp) => rp.permission.key),
     }));
   }
@@ -21,11 +27,16 @@ export class RbacService {
       data: { name: dto.name, description: dto.description },
       include: { permissions: true },
     });
-    return { id: row.id, name: row.name, description: row.description, permissions: [] };
+    return {
+      id: row.id,
+      name: row.name,
+      description: row.description,
+      permissions: [],
+    };
   }
 
   async listPermissions() {
-    return this.prisma.permission.findMany({ orderBy: { key: 'asc' } });
+    return this.prisma.permission.findMany({ orderBy: { key: "asc" } });
   }
 
   async assignPermissions(roleId: string, permissionKeys: string[]) {
@@ -37,7 +48,9 @@ export class RbacService {
     if (perms.length !== permissionKeys.length) {
       const known = perms.map((p) => p.key);
       const unknown = permissionKeys.filter((k) => !known.includes(k));
-      throw new BadRequestException(`Unknown permission keys: ${unknown.join(', ')}`);
+      throw new BadRequestException(
+        `Unknown permission keys: ${unknown.join(", ")}`,
+      );
     }
     await this.prisma.rolePermission.deleteMany({ where: { roleId } });
     await this.prisma.rolePermission.createMany({
