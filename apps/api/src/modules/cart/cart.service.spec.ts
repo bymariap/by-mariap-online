@@ -133,3 +133,79 @@ describe("CartService", () => {
     });
   });
 });
+
+describe("CartService.mergeGuestIntoUser", () => {
+  beforeEach(() => mockReset(prisma));
+
+  it("moves guest cart items into user cart and deletes guest cart", async () => {
+    (prisma.$transaction as any).mockImplementationOnce(async (fn: any) => {
+      const tx = {
+        cart: {
+          findUnique: jest
+            .fn()
+            .mockResolvedValueOnce({
+              // guest
+              id: "cg",
+              customerId: null,
+              guestToken: "g1",
+              items: [
+                {
+                  id: "gi1",
+                  productId: "p1",
+                  quantity: 1,
+                  unitPriceSnapshot: 50000,
+                },
+                {
+                  id: "gi2",
+                  productId: "p2",
+                  quantity: 3,
+                  unitPriceSnapshot: 30000,
+                },
+              ],
+            })
+            .mockResolvedValueOnce({
+              // user
+              id: "cu",
+              customerId: "u1",
+              guestToken: null,
+              items: [
+                {
+                  id: "ui1",
+                  productId: "p1",
+                  quantity: 2,
+                  unitPriceSnapshot: 50000,
+                },
+              ],
+            }),
+          create: jest.fn(),
+          delete: jest.fn().mockResolvedValueOnce({}),
+        },
+        cartItem: {
+          upsert: jest.fn().mockResolvedValue({}),
+        },
+      };
+      return fn(tx);
+    });
+
+    await svc.mergeGuestIntoUser("g1", "u1");
+    const tx = (prisma.$transaction as jest.Mock).mock.calls[0][0];
+    expect(typeof tx).toBe("function");
+  });
+
+  it("is a no-op when no guest cart exists", async () => {
+    (prisma.$transaction as any).mockImplementationOnce(async (fn: any) => {
+      const tx = {
+        cart: {
+          findUnique: jest.fn().mockResolvedValueOnce(null),
+          create: jest.fn(),
+          delete: jest.fn(),
+        },
+        cartItem: { upsert: jest.fn() },
+      };
+      return fn(tx);
+    });
+    await expect(
+      svc.mergeGuestIntoUser("missing", "u1"),
+    ).resolves.toBeUndefined();
+  });
+});

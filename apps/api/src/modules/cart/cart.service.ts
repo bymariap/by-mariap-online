@@ -136,4 +136,42 @@ export class CartService {
   async clear(cartId: string) {
     await this.prisma.cartItem.deleteMany({ where: { cartId } });
   }
+
+  async mergeGuestIntoUser(guestToken: string, userId: string): Promise<void> {
+    await this.prisma.$transaction(async (tx) => {
+      const guestCart = await tx.cart.findUnique({
+        where: { guestToken },
+        include: { items: true },
+      });
+      if (!guestCart) return;
+
+      let userCart = await tx.cart.findUnique({
+        where: { customerId: userId },
+        include: { items: true },
+      });
+      if (!userCart) {
+        userCart = await tx.cart.create({
+          data: { customerId: userId },
+          include: { items: true },
+        });
+      }
+
+      for (const gi of guestCart.items) {
+        await tx.cartItem.upsert({
+          where: {
+            cartId_productId: { cartId: userCart.id, productId: gi.productId },
+          },
+          create: {
+            cartId: userCart.id,
+            productId: gi.productId,
+            quantity: gi.quantity,
+            unitPriceSnapshot: gi.unitPriceSnapshot,
+          },
+          update: { quantity: { increment: gi.quantity } },
+        });
+      }
+
+      await tx.cart.delete({ where: { id: guestCart.id } });
+    });
+  }
 }
