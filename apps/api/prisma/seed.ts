@@ -117,6 +117,66 @@ async function main() {
       passwordHash: await bcrypt.hash(pw, 12),
     },
   });
+  if (process.env.SEED_DEMO_DATA === "true") {
+    const cats = [
+      { name: "Cejas", slug: "cejas" },
+      { name: "Pestañas", slug: "pestanas" },
+      { name: "Cuidado en casa", slug: "cuidado-casa" },
+    ];
+    for (const c of cats) {
+      await prisma.category.upsert({
+        where: { slug: c.slug },
+        update: {},
+        create: c,
+      });
+    }
+    const cejas = await prisma.category.findUniqueOrThrow({
+      where: { slug: "cejas" },
+    });
+    const casa = await prisma.category.findUniqueOrThrow({
+      where: { slug: "cuidado-casa" },
+    });
+
+    const products = [
+      {
+        name: "Sérum fortalecedor de cejas",
+        slug: "serum-cejas",
+        priceCop: 65000,
+        categoryIds: [cejas.id, casa.id],
+      },
+      {
+        name: "Pinzas profesionales",
+        slug: "pinzas-pro",
+        priceCop: 45000,
+        categoryIds: [cejas.id],
+      },
+      {
+        name: "Aceite reparador pestañas",
+        slug: "aceite-pestanas",
+        priceCop: 55000,
+        categoryIds: [casa.id],
+      },
+    ];
+    for (const p of products) {
+      const existing = await prisma.product.findUnique({
+        where: { slug: p.slug },
+      });
+      if (existing) continue;
+      await prisma.product.create({
+        data: {
+          name: p.name,
+          slug: p.slug,
+          priceCop: p.priceCop,
+          stockQuantity: 20,
+          imageUrls: [],
+          status: "published",
+          categories: {
+            create: p.categoryIds.map((id) => ({ categoryId: id })),
+          },
+        },
+      });
+    }
+  }
   console.log("seed: ok");
 }
 
