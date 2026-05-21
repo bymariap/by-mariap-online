@@ -9,6 +9,7 @@ import { PermissionsGuard } from "./common/guards/permissions.guard";
 import { UsersModule } from "./modules/users/users.module";
 import { RbacModule } from "./modules/rbac/rbac.module";
 import { SpecialistsModule } from "./modules/specialists/specialists.module";
+import { CategoriesModule } from "./modules/categories/categories.module";
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { SpecialistsModule } from "./modules/specialists/specialists.module";
     UsersModule,
     RbacModule,
     SpecialistsModule,
+    CategoriesModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },

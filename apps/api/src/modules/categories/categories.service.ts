@@ -1,14 +1,18 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
-import { CreateCategoryDto } from './dto/create-category.dto';
-import { UpdateCategoryDto } from './dto/update-category.dto';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
+import { PrismaService } from "../../prisma/prisma.service";
+import { CreateCategoryDto } from "./dto/create-category.dto";
+import { UpdateCategoryDto } from "./dto/update-category.dto";
 
 @Injectable()
 export class CategoriesService {
   constructor(private prisma: PrismaService) {}
 
   findAll() {
-    return this.prisma.category.findMany({ orderBy: { name: 'asc' } });
+    return this.prisma.category.findMany({ orderBy: { name: "asc" } });
   }
 
   async findById(id: string) {
@@ -21,7 +25,8 @@ export class CategoriesService {
     try {
       return await this.prisma.category.create({ data: dto });
     } catch (e: any) {
-      if (e.code === 'P2002') throw new ConflictException('Slug already exists');
+      if (e.code === "P2002")
+        throw new ConflictException("Slug already exists");
       throw e;
     }
   }
@@ -30,8 +35,9 @@ export class CategoriesService {
     try {
       return await this.prisma.category.update({ where: { id }, data: dto });
     } catch (e: any) {
-      if (e.code === 'P2025') throw new NotFoundException();
-      if (e.code === 'P2002') throw new ConflictException('Slug already exists');
+      if (e.code === "P2025") throw new NotFoundException();
+      if (e.code === "P2002")
+        throw new ConflictException("Slug already exists");
       throw e;
     }
   }
@@ -40,7 +46,7 @@ export class CategoriesService {
     try {
       await this.prisma.category.delete({ where: { id } });
     } catch (e: any) {
-      if (e.code === 'P2025') throw new NotFoundException();
+      if (e.code === "P2025") throw new NotFoundException();
       throw e;
     }
   }
