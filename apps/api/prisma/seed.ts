@@ -177,6 +177,34 @@ async function main() {
       });
     }
   }
+
+  const zoneCount = await prisma.shippingZone.count();
+  if (zoneCount === 0) {
+    await prisma.shippingZone.createMany({
+      data: [
+        {
+          name: "Medellín área metropolitana",
+          cities: [
+            "Medellín",
+            "Envigado",
+            "Itagüí",
+            "Sabaneta",
+            "La Estrella",
+            "Bello",
+          ],
+          priceCop: 10000,
+          isPickup: false,
+        },
+        {
+          name: "Recogida en tienda",
+          cities: [],
+          priceCop: 0,
+          isPickup: true,
+        },
+      ],
+    });
+  }
+
   console.log("seed: ok");
 }
 
