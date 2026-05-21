@@ -48,6 +48,8 @@ model User {
   consents      Consent[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+  cart          Cart?
+  orders        Order[]
 }
 
 model Specialist {
@@ -122,6 +124,8 @@ model Product {
   categories    ProductCategory[]
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
+  cartItems     CartItem[]
+  orderItems    OrderItem[]
 
   @@index([status])
 }
@@ -134,4 +138,111 @@ model ProductCategory {
 
   @@id([productId, categoryId])
   @@index([categoryId])
+}
+
+// ---------- Shipping ----------
+
+model ShippingZone {
+  id        String   @id @default(cuid())
+  name      String
+  cities    String[] @default([])
+  priceCop  Int
+  isPickup  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// ---------- Cart ----------
+
+model Cart {
+  id         String     @id @default(cuid())
+  customerId String?    @unique
+  customer   User?      @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  guestToken String?    @unique
+  items      CartItem[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model CartItem {
+  id                String  @id @default(cuid())
+  cartId            String
+  cart              Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  productId         String
+  product           Product @relation(fields: [productId], references: [id])
+  quantity          Int
+  unitPriceSnapshot Int
+
+  @@unique([cartId, productId])
+}
+
+// ---------- Orders ----------
+
+enum OrderStatus {
+  pending
+  paid
+  preparing
+  shipped
+  delivered
+  cancelled
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  reference       String      @unique
+  customerId      String?
+  customer        User?       @relation(fields: [customerId], references: [id])
+  guestEmail      String?
+  guestPhone      String?
+  items           OrderItem[]
+  subtotal        Int
+  shippingCost    Int
+  total           Int
+  status          OrderStatus @default(pending)
+  shippingAddress Json
+  shippingMethod  String
+  payment         Payment?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([customerId])
+  @@index([status])
+}
+
+model OrderItem {
+  id                String  @id @default(cuid())
+  orderId           String
+  order             Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId         String
+  product           Product @relation(fields: [productId], references: [id])
+  nameSnapshot      String
+  quantity          Int
+  unitPriceSnapshot Int
+}
+
+// ---------- Payments ----------
+
+model Payment {
+  id           String   @id @default(cuid())
+  orderId      String   @unique
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  provider     String // "wompi"
+  providerTxId String?  @unique
+  status       String // pending | approved | declined | voided | error
+  amount       Int
+  currency     String   @default("COP")
+  rawPayload   Json?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model WebhookLog {
+  id          String    @id @default(cuid())
+  provider    String
+  eventKey    String
+  eventType   String
+  rawPayload  Json
+  receivedAt  DateTime  @default(now())
+  processedAt DateTime?
+
+  @@unique([provider, eventKey])
 }
