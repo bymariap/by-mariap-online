@@ -27,3 +27,16 @@ pnpm --filter @bymariap/api test:e2e   # requires Docker
 - `apps/storefront` — Next.js 15 (Phase 3)
 - `packages/types` — shared DTO contracts
 - `packages/config-tsconfig` — shared tsconfig
+
+## Phase 2 — Admin + Products
+
+Two apps, two ports:
+- API: http://localhost:3001 (`pnpm --filter @bymariap/api dev`)
+- Admin: http://localhost:5173 (`pnpm --filter @bymariap/admin dev`)
+
+Set `ADMIN_ORIGIN=http://localhost:5173` in `apps/api/.env` and `VITE_API_BASE_URL=http://localhost:3001` in `apps/admin/.env`.
+
+Seed with demo data:
+```bash
+SEED_DEMO_DATA=true pnpm --filter @bymariap/api prisma:seed
+```
