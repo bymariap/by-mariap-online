@@ -13,6 +13,8 @@ import { PrismaService } from "../../prisma/prisma.service";
 import { CartService, CartOwner } from "../cart/cart.service";
 import { ShippingService } from "../shipping/shipping.service";
 import { CreateOrderDto } from "./dto/create-order.dto";
+import type { AuthUser } from "../../common/types/auth-user";
+import { OrderStatus } from "@prisma/client";
 
 @Injectable()
 export class OrdersService {
@@ -111,6 +113,66 @@ export class OrdersService {
     });
   }
 
+  async findById(id: string, user: AuthUser) {
+    const order = await this.prisma.order.findUnique({
+      where: { id },
+      include: { items: true },
+    });
+    if (!order) throw new NotFoundException();
+
+    const wide =
+      user.permissions.includes("orders:read") ||
+      user.permissions.includes("*");
+    if (!wide) {
+      const isOwner = order.customerId === user.id;
+      if (!isOwner) throw new ForbiddenException();
+    }
+    return this.shape(order);
+  }
+
+  async findByReference(reference: string) {
+    const order = await this.prisma.order.findUnique({
+      where: { reference },
+      include: { items: true },
+    });
+    if (!order) throw new NotFoundException();
+    return this.shape(order);
+  }
+
+  async listForUser(userId: string) {
+    const rows = await this.prisma.order.findMany({
+      where: { customerId: userId },
+      include: { items: true },
+      orderBy: { createdAt: "desc" },
+    });
+    return rows.map((o) => this.shape(o));
+  }
+
+  async listAdmin(status?: OrderStatus) {
+    const rows = await this.prisma.order.findMany({
+      where: status ? { status } : {},
+      include: { items: true },
+      orderBy: { createdAt: "desc" },
+    });
+    return rows.map((o) => this.shape(o));
+  }
+
+  async updateStatus(id: string, next: OrderStatus) {
+    const order = await this.prisma.order.findUnique({ where: { id } });
+    if (!order) throw new NotFoundException();
+    if (!isValidTransition(order.status, next)) {
+      throw new BadRequestException(
+        `Invalid transition ${order.status} → ${next}`,
+      );
+    }
+    const updated = await this.prisma.order.update({
+      where: { id },
+      data: { status: next },
+      include: { items: true },
+    });
+    return this.shape(updated);
+  }
+
   private shape(order: any) {
     return {
       id: order.id,
@@ -135,4 +197,17 @@ export class OrdersService {
       updatedAt: order.updatedAt,
     };
   }
+}
+
+const TRANSITIONS: Record<OrderStatus, OrderStatus[]> = {
+  pending: ["paid", "cancelled"],
+  paid: ["preparing", "cancelled"],
+  preparing: ["shipped", "cancelled"],
+  shipped: ["delivered"],
+  delivered: [],
+  cancelled: [],
+};
+
+export function isValidTransition(from: OrderStatus, to: OrderStatus): boolean {
+  return TRANSITIONS[from]?.includes(to) ?? false;
 }

@@ -177,3 +177,124 @@ describe("OrdersService.createFromCart", () => {
     ).rejects.toBeInstanceOf(BadRequestException);
   });
 });
+
+describe("OrdersService.findById", () => {
+  beforeEach(() => {
+    mockReset(prisma);
+    mockReset(cart);
+    mockReset(shipping);
+  });
+
+  it("returns the order when admin asks", async () => {
+    (prisma.order as any).findUnique.mockResolvedValueOnce({
+      id: "o1",
+      customerId: "u2",
+      items: [],
+      shippingAddress: {},
+      status: "paid",
+      reference: "BMR-1",
+      subtotal: 0,
+      shippingCost: 0,
+      total: 0,
+      shippingMethod: "X",
+      guestEmail: null,
+      guestPhone: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    const out = await svc.findById("o1", {
+      id: "u1",
+      permissions: ["orders:read"],
+    } as any);
+    expect(out.id).toBe("o1");
+  });
+
+  it("rejects when customer asks for someone else's order", async () => {
+    (prisma.order as any).findUnique.mockResolvedValueOnce({
+      id: "o1",
+      customerId: "u2",
+      items: [],
+      shippingAddress: {},
+      status: "paid",
+      reference: "BMR-1",
+      subtotal: 0,
+      shippingCost: 0,
+      total: 0,
+      shippingMethod: "X",
+      guestEmail: null,
+      guestPhone: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+    await expect(
+      svc.findById("o1", { id: "u1", permissions: ["orders:read:own"] } as any),
+    ).rejects.toMatchObject({ status: 403 });
+  });
+});
+
+describe("OrdersService.updateStatus", () => {
+  beforeEach(() => mockReset(prisma));
+
+  const baseOrder = {
+    id: "o1",
+    items: [],
+    shippingAddress: {},
+    status: "pending",
+    reference: "r",
+    subtotal: 0,
+    shippingCost: 0,
+    total: 0,
+    shippingMethod: "X",
+    guestEmail: null,
+    guestPhone: null,
+    customerId: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  it("allows pending → paid", async () => {
+    (prisma.order as any).findUnique.mockResolvedValueOnce({
+      ...baseOrder,
+      status: "pending",
+    });
+    (prisma.order as any).update.mockResolvedValueOnce({
+      ...baseOrder,
+      status: "paid",
+    });
+    const out = await svc.updateStatus("o1", "paid");
+    expect(out.status).toBe("paid");
+  });
+
+  it("rejects delivered → pending", async () => {
+    (prisma.order as any).findUnique.mockResolvedValueOnce({
+      ...baseOrder,
+      status: "delivered",
+    });
+    await expect(svc.updateStatus("o1", "pending")).rejects.toBeInstanceOf(
+      Error,
+    ); // BadRequestException
+  });
+
+  it("cancel allowed from pending", async () => {
+    (prisma.order as any).findUnique.mockResolvedValueOnce({
+      ...baseOrder,
+      status: "pending",
+    });
+    (prisma.order as any).update.mockResolvedValueOnce({
+      ...baseOrder,
+      status: "cancelled",
+    });
+    const out = await svc.updateStatus("o1", "cancelled");
+    expect(out.status).toBe("cancelled");
+  });
+
+  it("cancel rejected from shipped", async () => {
+    (prisma.order as any).findUnique.mockResolvedValueOnce({
+      ...baseOrder,
+      status: "shipped",
+    });
+    await expect(svc.updateStatus("o1", "cancelled")).rejects.toBeInstanceOf(
+      Error,
+    );
+  });
+});
