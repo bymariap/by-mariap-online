@@ -11,6 +11,8 @@ import { Public } from "../../common/decorators/public.decorator";
 import { LoginDto } from "./dto/login.dto";
 import { AuthService } from "./auth.service";
 import { TokenPair } from "./auth.types";
+import { CartService } from "../cart/cart.service";
+import { GUEST_TOKEN_COOKIE, clearGuestToken } from "../cart/guest-token";
 
 const cookieOpts = () => ({
   httpOnly: true,
@@ -22,16 +24,32 @@ const cookieOpts = () => ({
 
 @Controller("auth")
 export class AuthController {
-  constructor(private auth: AuthService) {}
+  constructor(
+    private auth: AuthService,
+    private cart: CartService,
+  ) {}
 
   @Public()
   @Post("login")
   async login(
     @Body() dto: LoginDto,
+    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
     const tokens = await this.auth.login(dto.email, dto.password);
     this.writeCookies(res, tokens);
+
+    const guestToken = req.cookies?.[GUEST_TOKEN_COOKIE];
+    if (guestToken) {
+      // Need userId for the merge — re-decode the access token (no verification needed,
+      // we just signed it).
+      const decoded = decodeUserId(tokens.accessToken);
+      if (decoded) {
+        await this.cart.mergeGuestIntoUser(guestToken, decoded);
+        clearGuestToken(res);
+      }
+    }
+
     res.json({ ok: true });
   }
 
@@ -68,5 +86,16 @@ export class AuthController {
       ...cookieOpts(),
       maxAge: refreshMaxAge,
     });
+  }
+}
+
+function decodeUserId(jwt: string): string | null {
+  const parts = jwt.split(".");
+  if (parts.length !== 3) return null;
+  try {
+    const payload = JSON.parse(Buffer.from(parts[1], "base64url").toString());
+    return payload.sub ?? null;
+  } catch {
+    return null;
   }
 }
