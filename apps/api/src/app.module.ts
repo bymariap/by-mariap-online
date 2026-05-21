@@ -12,6 +12,7 @@ import { SpecialistsModule } from "./modules/specialists/specialists.module";
 import { CategoriesModule } from "./modules/categories/categories.module";
 import { ProductsModule } from "./modules/products/products.module";
 import { CartModule } from "./modules/cart/cart.module";
+import { ShippingModule } from "./modules/shipping/shipping.module";
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { CartModule } from "./modules/cart/cart.module";
     CategoriesModule,
     ProductsModule,
     CartModule,
+    ShippingModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },
