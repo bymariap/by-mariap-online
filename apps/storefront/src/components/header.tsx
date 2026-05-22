@@ -25,7 +25,7 @@ export function Header() {
           href="/"
           className="font-heading text-lg font-semibold tracking-tight text-foreground"
         >
-          Cejas Medellín Studio
+          By MariaP
         </Link>
 
         {/* Nav */}
