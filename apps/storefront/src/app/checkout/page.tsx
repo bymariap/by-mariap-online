@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { api } from "@/lib/api/client";
+import { api, ApiError } from "@/lib/api/client";
 import { endpoints } from "@/lib/api/endpoints";
 import { useCart } from "@/lib/cart/hooks";
 import { useMe } from "@/lib/auth/hooks";
@@ -53,7 +53,7 @@ export default function CheckoutPage() {
     },
   });
 
-  const city = form.watch("city");
+  const { city, shippingZoneId } = form.watch();
   const shippingOptions = useQuery({
     queryKey: ["shipping", city],
     queryFn: () => api.get<ShippingOptionDTO[]>(endpoints.storeShipping(city)),
@@ -74,7 +74,7 @@ export default function CheckoutPage() {
   }, [cart.isLoading, cart.data, router]);
 
   const selectedZone = shippingOptions.data?.find(
-    (o) => o.id === form.watch("shippingZoneId"),
+    (o) => o.id === shippingZoneId,
   );
   const shippingCost = selectedZone?.priceCop ?? 0;
   const total = (cart.data?.subtotal ?? 0) + shippingCost;
@@ -102,16 +102,14 @@ export default function CheckoutPage() {
       const intent = await api.get<PaymentIntentDTO>(
         endpoints.storePayIntent(order.reference),
       );
-      const redirectUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/confirmacion?id=${order.reference}`;
+      const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
+      const redirectUrl = `${siteUrl}/checkout/confirmacion?id=${order.reference}`;
       window.location.href = buildWompiRedirectUrl(intent, redirectUrl);
     } catch (e: unknown) {
-      const err = e as { body?: { code?: string }; message?: string };
-      if (
-        (err?.body as { code?: string } | undefined)?.code === "OUT_OF_STOCK"
-      ) {
+      if (e instanceof ApiError && (e.body as { code?: string })?.code === "OUT_OF_STOCK") {
         toast.error("Uno de los productos quedó sin stock. Revisa tu carrito.");
       } else {
-        toast.error(err?.message ?? "No se pudo crear la orden");
+        toast.error(e instanceof Error ? e.message : "No se pudo crear la orden");
       }
     }
   }
@@ -147,8 +145,9 @@ export default function CheckoutPage() {
             {!me.data && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <Label>Correo electrónico</Label>
+                  <Label htmlFor="guestEmail">Correo electrónico</Label>
                   <Input
+                    id="guestEmail"
                     type="email"
                     placeholder="tu@correo.com"
                     {...form.register("guestEmail")}
@@ -160,8 +159,9 @@ export default function CheckoutPage() {
                   )}
                 </div>
                 <div>
-                  <Label>Teléfono de contacto</Label>
+                  <Label htmlFor="guestPhone">Teléfono de contacto</Label>
                   <Input
+                    id="guestPhone"
                     placeholder="+57 300 000 0000"
                     {...form.register("guestPhone")}
                   />
@@ -171,8 +171,8 @@ export default function CheckoutPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
-                <Label>Nombre completo</Label>
-                <Input {...form.register("fullName")} />
+                <Label htmlFor="fullName">Nombre completo</Label>
+                <Input id="fullName" {...form.register("fullName")} />
                 {form.formState.errors.fullName && (
                   <p className="text-xs text-destructive mt-1">
                     {form.formState.errors.fullName.message}
@@ -180,8 +180,8 @@ export default function CheckoutPage() {
                 )}
               </div>
               <div>
-                <Label>Celular</Label>
-                <Input {...form.register("phone")} />
+                <Label htmlFor="phone">Celular</Label>
+                <Input id="phone" {...form.register("phone")} />
                 {form.formState.errors.phone && (
                   <p className="text-xs text-destructive mt-1">
                     {form.formState.errors.phone.message}
@@ -191,8 +191,8 @@ export default function CheckoutPage() {
             </div>
 
             <div>
-              <Label>Dirección</Label>
-              <Input {...form.register("address")} />
+              <Label htmlFor="address">Dirección</Label>
+              <Input id="address" {...form.register("address")} />
               {form.formState.errors.address && (
                 <p className="text-xs text-destructive mt-1">
                   {form.formState.errors.address.message}
@@ -202,12 +202,18 @@ export default function CheckoutPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
               <div>
-                <Label>Ciudad</Label>
-                <Input {...form.register("city")} />
+                <Label htmlFor="city">Ciudad</Label>
+                <Input id="city" {...form.register("city")} />
+                {form.formState.errors.city && (
+                  <p className="text-xs text-destructive mt-1">
+                    {form.formState.errors.city.message}
+                  </p>
+                )}
               </div>
               <div>
-                <Label>Notas (opcional)</Label>
+                <Label htmlFor="notes">Notas (opcional)</Label>
                 <Input
+                  id="notes"
                   {...form.register("notes")}
                   placeholder="Instrucciones de entrega…"
                 />
@@ -226,6 +232,11 @@ export default function CheckoutPage() {
             {shippingOptions.isLoading && (
               <p className="text-sm font-body text-muted-foreground">
                 Cargando opciones…
+              </p>
+            )}
+            {shippingOptions.isError && (
+              <p className="text-sm text-destructive">
+                No se pudieron cargar las opciones de envío. Intenta de nuevo.
               </p>
             )}
             {shippingOptions.data?.map((opt) => (
@@ -257,6 +268,7 @@ export default function CheckoutPage() {
           <button
             type="submit"
             disabled={form.formState.isSubmitting}
+            aria-busy={form.formState.isSubmitting}
             className="w-full h-12 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {form.formState.isSubmitting ? "Procesando…" : "Pagar con Wompi"}
