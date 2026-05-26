@@ -22,8 +22,10 @@ export default function AccountLayout({
   const logout = useLogout();
 
   useEffect(() => {
-    if (!me.isLoading && !me.data) router.replace("/login?next=/mi-cuenta");
-  }, [me.isLoading, me.data, router]);
+    if (!me.isLoading && !me.data) {
+      router.replace(`/login?next=${encodeURIComponent(pathname)}`);
+    }
+  }, [me.isLoading, me.data, router, pathname]);
 
   if (me.isLoading || !me.data) {
     return (
