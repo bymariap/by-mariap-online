@@ -102,3 +102,49 @@ export interface PaymentIntentDTO {
   publicKey: string;
   integritySignature: string;
 }
+
+export type ServiceStatus = 'draft' | 'published' | 'archived';
+
+export interface ServiceDTO {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  durationMinutes: number;
+  priceCop: number;
+  status: ServiceStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AvailabilityWindowDTO {
+  id: string;
+  specialistId: string;
+  date: string;        // YYYY-MM-DD in America/Bogota
+  startMinute: number; // local minute-of-day
+  endMinute: number;
+}
+
+export interface AvailableSlotDTO {
+  startAt: string;     // ISO UTC instant
+  localTime: string;   // "HH:mm" in America/Bogota for display
+}
+
+export type AppointmentStatus = 'scheduled' | 'completed' | 'cancelled' | 'no_show';
+
+export interface AppointmentDTO {
+  id: string;
+  customerId: string | null;
+  guestEmail: string | null;
+  guestPhone: string | null;
+  guestFullName: string | null;
+  specialistId: string;
+  specialistName: string;
+  serviceId: string;
+  serviceName: string;
+  scheduledAt: string;
+  durationMinutes: number;
+  status: AppointmentStatus;
+  notes: string | null;
+  createdAt: string;
+}
