@@ -50,15 +50,18 @@ model User {
   updatedAt     DateTime       @updatedAt
   cart          Cart?
   orders        Order[]
+  appointments  Appointment[]  @relation("CustomerAppointments")
 }
 
 model Specialist {
-  id          String   @id @default(cuid())
-  userId      String   @unique
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bio         String?
-  specialties String[] @default([])
-  avatarUrl   String?
+  id           String                   @id @default(cuid())
+  userId       String                   @unique
+  user         User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio          String?
+  specialties  String[]                 @default([])
+  avatarUrl    String?
+  availability SpecialistAvailability[]
+  appointments Appointment[]
 }
 
 model RefreshToken {
@@ -245,4 +248,75 @@ model WebhookLog {
   processedAt DateTime?
 
   @@unique([provider, eventKey])
+}
+
+// ---------- Services ----------
+
+enum ServiceStatus {
+  draft
+  published
+  archived
+}
+
+model Service {
+  id              String        @id @default(cuid())
+  name            String
+  slug            String        @unique
+  description     String?
+  durationMinutes Int
+  priceCop        Int
+  status          ServiceStatus @default(draft)
+  appointments    Appointment[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([status])
+}
+
+// ---------- Availability ----------
+
+model SpecialistAvailability {
+  id           String     @id @default(cuid())
+  specialistId String
+  specialist   Specialist @relation(fields: [specialistId], references: [id], onDelete: Cascade)
+  // Stored as the local date in America/Bogota.
+  date         DateTime   @db.Date
+  // Times stored as minutes-from-midnight in local Bogota time (e.g. 09:00 = 540).
+  startMinute  Int
+  endMinute    Int
+  createdAt    DateTime   @default(now())
+
+  @@index([specialistId, date])
+}
+
+// ---------- Appointments ----------
+
+enum AppointmentStatus {
+  scheduled
+  completed
+  cancelled
+  no_show
+}
+
+model Appointment {
+  id              String            @id @default(cuid())
+  customerId      String?
+  customer        User?             @relation("CustomerAppointments", fields: [customerId], references: [id])
+  guestEmail      String?
+  guestPhone      String?
+  guestFullName   String?
+  specialistId    String
+  specialist      Specialist        @relation(fields: [specialistId], references: [id])
+  serviceId       String
+  service         Service           @relation(fields: [serviceId], references: [id])
+  scheduledAt     DateTime          // UTC instant
+  durationMinutes Int
+  status          AppointmentStatus @default(scheduled)
+  notes           String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@unique([specialistId, scheduledAt])
+  @@index([customerId])
+  @@index([scheduledAt])
 }
