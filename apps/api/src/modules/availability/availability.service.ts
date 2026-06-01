@@ -3,10 +3,13 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { PublishAvailabilityDto } from './dto/publish-availability.dto';
+import { generateSlots } from './slot-generator';
+import { ServicesService } from '../services/services.service';
+import { fromZonedTime, formatInTimeZone } from 'date-fns-tz';
 
 @Injectable()
 export class AvailabilityService {
-  constructor(private prisma: PrismaService, private services?: any) {}
+  constructor(private prisma: PrismaService, private services?: ServicesService) {}
 
   async publish(specialistId: string, dto: PublishAvailabilityDto) {
     if (dto.startMinute >= dto.endMinute) {
@@ -41,4 +44,69 @@ export class AvailabilityService {
     if (row.specialistId !== specialistId) throw new ForbiddenException();
     await this.prisma.specialistAvailability.delete({ where: { id } });
   }
+
+  async getSlots(input: { serviceId: string; specialistId: string; date: string }) {
+    const service = await this.services!.findById(input.serviceId);
+
+    const windows = await this.prisma.specialistAvailability.findMany({
+      where: {
+        specialistId: input.specialistId,
+        date: new Date(`${input.date}T00:00:00.000Z`),
+      },
+    });
+
+    const BOGOTA = 'America/Bogota';
+    // Local Bogota date YYYY-MM-DD spans UTC [date+05:00, date+05:00+24h).
+    const dayStartUtc = fromZonedTime(`${input.date}T00:00:00`, BOGOTA);
+    const dayEndUtc   = new Date(dayStartUtc.getTime() + 24 * 60 * 60 * 1000);
+
+    const busyAppointments = await this.prisma.appointment.findMany({
+      where: {
+        specialistId: input.specialistId,
+        status: 'scheduled',
+        scheduledAt: { gte: dayStartUtc, lt: dayEndUtc },
+      },
+      select: { scheduledAt: true, durationMinutes: true },
+    });
+
+    // A slot at `m` is blocked if an existing appointment occupies minute `m`
+    // (i.e. apptStart <= m < apptEnd). We model this with a 1-minute "point"
+    // busy interval so generateSlots' overlap check fires only when the slot
+    // start falls inside the appointment window.
+    const busyPoints = busyAppointments.map((a) => {
+      const localMinutes = utcInstantToLocalMinutes(a.scheduledAt, BOGOTA);
+      return { startMinute: localMinutes, endMinute: localMinutes + a.durationMinutes };
+    });
+
+    // Generate slots without busy filtering first, then apply the correct
+    // exclusion rule: exclude a slot at `m` if any appointment occupies `m`.
+    const allSlots = generateSlots({
+      windows: windows.map((w) => ({ startMinute: w.startMinute, endMinute: w.endMinute })),
+      busy: [],
+      durationMinutes: service.durationMinutes,
+    });
+
+    const slots = allSlots.filter((s) =>
+      !busyPoints.some((b) => s.startMinute >= b.startMinute && s.startMinute < b.endMinute),
+    );
+
+    return slots.map((s) => {
+      const utc = fromZonedTime(
+        `${input.date}T${pad(Math.floor(s.startMinute / 60))}:${pad(s.startMinute % 60)}:00`,
+        BOGOTA,
+      );
+      return {
+        startAt: utc.toISOString(),
+        localTime: formatInTimeZone(utc, BOGOTA, 'HH:mm'),
+      };
+    });
+  }
+}
+
+function pad(n: number): string { return String(n).padStart(2, '0'); }
+
+function utcInstantToLocalMinutes(utc: Date, tz: string): number {
+  const hh = Number(formatInTimeZone(utc, tz, 'HH'));
+  const mm = Number(formatInTimeZone(utc, tz, 'mm'));
+  return hh * 60 + mm;
 }
