@@ -13,7 +13,7 @@ export class SpecialistsController {
   @Get("store/specialists")
   publicList() {
     return this.svc.findAll().then((rows) => rows.map((s) => ({
-      id: s.id, userId: s.userId, user: { fullName: s.user.fullName },
+      id: s.id, userId: s.userId, user: { fullName: s.user?.fullName ?? '' },
       specialties: s.specialties, avatarUrl: s.avatarUrl,
     })));
   }
