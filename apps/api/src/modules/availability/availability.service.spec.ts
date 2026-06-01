@@ -73,8 +73,8 @@ describe('AvailabilityService.getSlots', () => {
       serviceId: 'svc1', specialistId: 's1', date: '2026-06-01',
     });
 
-    // Local times: 09:00, 09:30, 11:00 (others overlap busy 10:00-10:45)
-    expect(slots.map((s) => s.localTime)).toEqual(['09:00', '09:30', '11:00']);
+    // Local times: 09:00, 11:00 (09:30, 10:00, 10:30 all overlap with busy 10:00-10:45 using full interval check)
+    expect(slots.map((s) => s.localTime)).toEqual(['09:00', '11:00']);
     expect(slots[0].startAt).toBe(new Date('2026-06-01T14:00:00.000Z').toISOString());
   });
 

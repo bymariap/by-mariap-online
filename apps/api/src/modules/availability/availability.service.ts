@@ -69,26 +69,16 @@ export class AvailabilityService {
       select: { scheduledAt: true, durationMinutes: true },
     });
 
-    // A slot at `m` is blocked if an existing appointment occupies minute `m`
-    // (i.e. apptStart <= m < apptEnd). We model this with a 1-minute "point"
-    // busy interval so generateSlots' overlap check fires only when the slot
-    // start falls inside the appointment window.
-    const busyPoints = busyAppointments.map((a) => {
+    const busy = busyAppointments.map((a) => {
       const localMinutes = utcInstantToLocalMinutes(a.scheduledAt, BOGOTA);
       return { startMinute: localMinutes, endMinute: localMinutes + a.durationMinutes };
     });
 
-    // Generate slots without busy filtering first, then apply the correct
-    // exclusion rule: exclude a slot at `m` if any appointment occupies `m`.
-    const allSlots = generateSlots({
+    const slots = generateSlots({
       windows: windows.map((w) => ({ startMinute: w.startMinute, endMinute: w.endMinute })),
-      busy: [],
+      busy,
       durationMinutes: service.durationMinutes,
     });
-
-    const slots = allSlots.filter((s) =>
-      !busyPoints.some((b) => s.startMinute >= b.startMinute && s.startMinute < b.endMinute),
-    );
 
     return slots.map((s) => {
       const utc = fromZonedTime(
