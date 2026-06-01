@@ -9,7 +9,7 @@ import { fromZonedTime, formatInTimeZone } from 'date-fns-tz';
 
 @Injectable()
 export class AvailabilityService {
-  constructor(private prisma: PrismaService, private services?: ServicesService) {}
+  constructor(private prisma: PrismaService, private services: ServicesService) {}
 
   async publish(specialistId: string, dto: PublishAvailabilityDto) {
     if (dto.startMinute >= dto.endMinute) {
