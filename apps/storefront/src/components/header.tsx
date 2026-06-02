@@ -5,6 +5,7 @@ import { CartIconButton } from "./cart-icon-button";
 const navLinks = [
   { label: "Inicio", href: "/" },
   { label: "Tienda", href: "/productos" },
+  { label: "Servicios", href: "/servicios" },
   { label: "Nosotros", href: "/#nosotros" },
   { label: "Contacto", href: "/#contacto" },
 ];
