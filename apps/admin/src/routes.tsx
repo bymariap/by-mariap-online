@@ -7,6 +7,7 @@ import { ProductFormPage } from "@/features/products/product-form-page";
 import { CategoriesPage } from "@/features/categories/categories-page";
 import { UsersPage } from "@/features/users/users-page";
 import { SpecialistsPage } from "@/features/specialists/specialists-page";
+import { ServicesPage } from "@/features/services/services-page";
 
 export const router: ReturnType<typeof createBrowserRouter> =
   createBrowserRouter([
@@ -24,6 +25,7 @@ export const router: ReturnType<typeof createBrowserRouter> =
             { path: "/categories", element: <CategoriesPage /> },
             { path: "/users", element: <UsersPage /> },
             { path: "/specialists", element: <SpecialistsPage /> },
+            { path: "/services", element: <ServicesPage /> },
           ],
         },
       ],
