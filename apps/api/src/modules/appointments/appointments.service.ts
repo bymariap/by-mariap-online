@@ -1,9 +1,11 @@
 import {
-  BadRequestException, HttpException, HttpStatus, Injectable,
+  BadRequestException, ForbiddenException, HttpException, HttpStatus, Injectable, NotFoundException,
 } from '@nestjs/common';
+import { AppointmentStatus } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AvailabilityService } from '../availability/availability.service';
 import { ServicesService } from '../services/services.service';
+import { AuthUser } from '../../common/types/auth-user';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 
 const INCLUDE = {
@@ -90,4 +92,90 @@ export class AppointmentsService {
       throw e;
     }
   }
+
+  async listForUser(userId: string) {
+    const rows = await this.prisma.appointment.findMany({
+      where: { customerId: userId },
+      include: INCLUDE,
+      orderBy: { scheduledAt: 'desc' },
+    });
+    return rows.map(shape);
+  }
+
+  async listForSpecialist(specialistId: string, fromIso?: string, toIso?: string) {
+    const rows = await this.prisma.appointment.findMany({
+      where: {
+        specialistId,
+        ...(fromIso || toIso
+          ? { scheduledAt: { gte: fromIso ? new Date(fromIso) : undefined, lt: toIso ? new Date(toIso) : undefined } }
+          : {}),
+      },
+      include: INCLUDE,
+      orderBy: { scheduledAt: 'asc' },
+    });
+    return rows.map(shape);
+  }
+
+  async listAdmin(status?: AppointmentStatus) {
+    const rows = await this.prisma.appointment.findMany({
+      where: status ? { status } : {},
+      include: INCLUDE,
+      orderBy: { scheduledAt: 'desc' },
+    });
+    return rows.map(shape);
+  }
+
+  async findById(id: string, actor: AuthUser) {
+    const row = await this.prisma.appointment.findUnique({ where: { id }, include: INCLUDE });
+    if (!row) throw new NotFoundException();
+    const broad = actor.permissions.includes('appointments:read') || actor.permissions.includes('*');
+    if (!broad) {
+      const isOwner =
+        (actor.role === 'customer' && row.customerId === actor.id) ||
+        (actor.role === 'specialist' && row.specialistId === actor.specialistId);
+      if (!isOwner) throw new ForbiddenException();
+    }
+    return shape(row);
+  }
+
+  async cancelByCustomer(userId: string, id: string) {
+    const row = await this.prisma.appointment.findUnique({ where: { id } });
+    if (!row) throw new NotFoundException();
+    if (row.customerId !== userId) throw new ForbiddenException();
+    if (row.status !== 'scheduled') throw new BadRequestException('Only scheduled appointments can be cancelled');
+    const hoursUntil = (row.scheduledAt.getTime() - Date.now()) / 3600_000;
+    if (hoursUntil < 24) {
+      throw new HttpException(
+        { code: 'CANCELLATION_DEADLINE_PASSED', message: 'Less than 24h before appointment — contact admin' },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    const updated = await this.prisma.appointment.update({
+      where: { id }, data: { status: 'cancelled' }, include: INCLUDE,
+    });
+    return shape(updated);
+  }
+
+  async adminUpdateStatus(id: string, next: AppointmentStatus) {
+    const row = await this.prisma.appointment.findUnique({ where: { id } });
+    if (!row) throw new NotFoundException();
+    if (!isValidAppointmentTransition(row.status, next)) {
+      throw new BadRequestException(`Invalid transition ${row.status} → ${next}`);
+    }
+    const updated = await this.prisma.appointment.update({
+      where: { id }, data: { status: next }, include: INCLUDE,
+    });
+    return shape(updated);
+  }
+}
+
+const TRANSITIONS: Record<AppointmentStatus, AppointmentStatus[]> = {
+  scheduled: ['completed', 'cancelled', 'no_show'],
+  completed: [],
+  cancelled: [],
+  no_show:   [],
+};
+
+export function isValidAppointmentTransition(from: AppointmentStatus, to: AppointmentStatus): boolean {
+  return TRANSITIONS[from]?.includes(to) ?? false;
 }
