@@ -9,6 +9,7 @@ import { cn } from "@/lib/cn";
 const navItems = [
   { label: "Mi perfil", href: "/mi-cuenta" },
   { label: "Mis pedidos", href: "/mi-cuenta/pedidos" },
+  { label: "Mis citas", href: "/mi-cuenta/citas" },
 ];
 
 export default function AccountLayout({
