@@ -9,6 +9,7 @@ import { UsersPage } from "@/features/users/users-page";
 import { SpecialistsPage } from "@/features/specialists/specialists-page";
 import { ServicesPage } from "@/features/services/services-page";
 import { AvailabilityPage } from "@/features/availability/availability-page";
+import { AppointmentsPage } from "@/features/appointments/appointments-page";
 
 export const router: ReturnType<typeof createBrowserRouter> =
   createBrowserRouter([
@@ -28,6 +29,7 @@ export const router: ReturnType<typeof createBrowserRouter> =
             { path: "/specialists", element: <SpecialistsPage /> },
             { path: "/services", element: <ServicesPage /> },
             { path: "/mi-agenda", element: <AvailabilityPage /> },
+            { path: "/citas", element: <AppointmentsPage /> },
           ],
         },
       ],
