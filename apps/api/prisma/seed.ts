@@ -205,6 +205,19 @@ async function main() {
     });
   }
 
+  await prisma.service.upsert({
+    where: { slug: 'diseno-cejas' },
+    update: {},
+    create: {
+      name: 'Diseño de Cejas',
+      slug: 'diseno-cejas',
+      description: 'Diseño profesional de cejas adaptado a tu rostro. Duración aproximada 45 minutos.',
+      durationMinutes: 45,
+      priceCop: 50000,
+      status: 'published',
+    },
+  });
+
   console.log("seed: ok");
 }
 
