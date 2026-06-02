@@ -17,6 +17,7 @@ import { OrdersModule } from "./modules/orders/orders.module";
 import { PaymentsModule } from "./modules/payments/payments.module";
 import { ServicesModule } from "./modules/services/services.module";
 import { AvailabilityModule } from "./modules/availability/availability.module";
+import { AppointmentsModule } from "./modules/appointments/appointments.module";
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { AvailabilityModule } from "./modules/availability/availability.module";
     PaymentsModule,
     ServicesModule,
     AvailabilityModule,
+    AppointmentsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: JwtAuthGuard },
