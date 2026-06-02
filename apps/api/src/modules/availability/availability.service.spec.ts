@@ -5,7 +5,8 @@ import { AvailabilityService } from './availability.service';
 import { ServicesService } from '../services/services.service';
 
 const prisma = mockDeep<PrismaService>();
-const svc = new AvailabilityService(prisma);
+const servicesStub = mockDeep<ServicesService>();
+const svc = new AvailabilityService(prisma, servicesStub);
 
 describe('AvailabilityService.publish', () => {
   beforeEach(() => mockReset(prisma));
