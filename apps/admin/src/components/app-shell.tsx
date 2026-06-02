@@ -9,6 +9,7 @@ const nav = [
   { to: "/users", label: "Usuarios" },
   { to: "/specialists", label: "Especialistas" },
   { to: "/services", label: "Servicios" },
+  { to: "/mi-agenda", label: "Mi agenda" },
 ];
 
 export function AppShell() {
