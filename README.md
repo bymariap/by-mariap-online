@@ -62,3 +62,17 @@ Required env (`apps/storefront/.env.local`):
 - `NEXT_PUBLIC_SITE_URL=http://localhost:3000`
 
 Design source: Stitch project **Cejas Medellín Studio** (id 5755618256776589056).
+
+## Phase 5 — Services, Availability, Appointments
+
+New API surface:
+- Public: `GET /store/services`, `/store/services/:slug`, `/store/specialists`, `/store/availability?serviceId&specialistId&date`
+- Customer/specialist: `POST /store/appointments`, `GET /me/appointments`, `POST /me/appointments/:id/cancel`, `POST /me/availability`, `GET /me/availability`, `DELETE /me/availability/:id`
+- Admin: `GET /admin/services`, `/admin/services/:id`, `POST/PATCH/DELETE /admin/services`, `GET /admin/appointments`, `PATCH /admin/appointments/:id/status`, `GET /admin/availability?specialistId&fromDate&toDate`
+
+Slot grid is fixed at `:00`/`:30` local America/Bogota; busy intervals exclude slots using full interval overlap. Cancellation by customer allowed up to 24h before `scheduledAt`.
+
+Run E2E (requires Docker):
+```bash
+pnpm --filter @bymariap/api test:e2e -- --testPathPattern=availability-slots
+```
