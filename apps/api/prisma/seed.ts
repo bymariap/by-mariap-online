@@ -38,6 +38,7 @@ const PERMISSIONS: string[] = [
   "appointments:write:own",
   // availability
   "availability:read",
+  "availability:write",
   "availability:write:own",
   // services
   "services:read",
