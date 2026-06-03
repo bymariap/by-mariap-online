@@ -7,6 +7,7 @@ export interface Me {
   fullName: string;
   phone: string | null;
   role: { id: string; name: string };
+  specialist: { id: string } | null;
 }
 
 export function useMe() {

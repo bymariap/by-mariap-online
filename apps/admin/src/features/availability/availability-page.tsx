@@ -45,8 +45,13 @@ export function AvailabilityPage() {
     onError: (e: any) => toast.error(e?.message ?? "Error"),
   });
 
-  if (me.data && me.data.role.name !== "specialist" && me.data.role.name !== "admin") {
-    return <p>Esta sección es solo para especialistas.</p>;
+  if (me.data && !me.data.specialist) {
+    return (
+      <p className="text-muted-foreground text-sm">
+        Esta sección es para usuarios con perfil de especialista. Pide a un
+        administrador que te asigne uno desde &quot;Especialistas&quot;.
+      </p>
+    );
   }
 
   return (
