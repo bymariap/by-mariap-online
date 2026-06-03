@@ -39,8 +39,12 @@ export class AppointmentsController {
 
   @Get('admin/appointments')
   @RequirePermissions('appointments:read')
-  list(@Query('status') status?: AppointmentStatus) {
-    return this.svc.listAdmin(status);
+  list(
+    @Query('status') status?: AppointmentStatus,
+    @Query('from') from?: string,
+    @Query('to') to?: string,
+  ) {
+    return this.svc.listAdmin(status, from, to);
   }
 
   @Get('admin/appointments/:id')
