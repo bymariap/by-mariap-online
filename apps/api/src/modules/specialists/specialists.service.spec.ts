@@ -35,7 +35,23 @@ describe("SpecialistsService", () => {
     });
   });
 
-  it("rejects when user role is not specialist", async () => {
+  it("upserts a specialist when user has role admin (owner who also attends)", async () => {
+    (prisma.user as any).findUnique.mockResolvedValueOnce({
+      id: "u2",
+      role: { name: "admin" },
+    });
+    (prisma.specialist as any).upsert.mockResolvedValueOnce({
+      id: "s2",
+      userId: "u2",
+      bio: null,
+      specialties: [],
+      avatarUrl: null,
+    });
+    const out = await svc.upsert("u2", {});
+    expect(out.id).toBe("s2");
+  });
+
+  it("rejects when user role is neither specialist nor admin", async () => {
     (prisma.user as any).findUnique.mockResolvedValueOnce({
       id: "u1",
       role: { name: "customer" },

@@ -18,9 +18,10 @@ interface FormValues {
   avatarUrl: string;
 }
 
-// Only users with the "specialist" role can receive a specialist profile —
-// the backend enforces this in SpecialistsService.upsert.
-const ELIGIBLE_ROLES = ["specialist"];
+// Users who can receive a bookable specialist profile. Matches the backend
+// rule in SpecialistsService.upsert: a dedicated specialist account, or an
+// admin account (the owner who also attends clients).
+const ELIGIBLE_ROLES = ["specialist", "admin"];
 
 export function SpecialistFormDialog({
   open,
@@ -116,8 +117,8 @@ export function SpecialistFormDialog({
           )}
           {!editing && eligibleUsers.length === 0 && (
             <p className="text-xs text-muted-foreground">
-              Crea primero un usuario con rol &quot;specialist&quot; que aún no
-              tenga perfil.
+              Crea primero un usuario con rol &quot;specialist&quot; (o usa una
+              cuenta admin) que aún no tenga perfil.
             </p>
           )}
         </div>

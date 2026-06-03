@@ -16,9 +16,11 @@ export class SpecialistsService {
       include: { role: true },
     });
     if (!user) throw new NotFoundException();
-    if (user.role.name !== "specialist") {
+    // A bookable specialist profile can be attached to a dedicated specialist
+    // account, or to an admin account (e.g. the owner who also attends clients).
+    if (!["specialist", "admin"].includes(user.role.name)) {
       throw new BadRequestException(
-        'User role must be "specialist" to assign a specialist profile',
+        'User role must be "specialist" or "admin" to assign a specialist profile',
       );
     }
     return this.prisma.specialist.upsert({
