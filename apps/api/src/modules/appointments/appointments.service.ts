@@ -116,9 +116,17 @@ export class AppointmentsService {
     return rows.map(shape);
   }
 
-  async listAdmin(status?: AppointmentStatus) {
+  async listAdmin(status?: AppointmentStatus, fromIso?: string, toIso?: string) {
+    const where: any = {};
+    if (status) where.status = status;
+    if (fromIso || toIso) {
+      where.scheduledAt = {
+        ...(fromIso ? { gte: new Date(fromIso) } : {}),
+        ...(toIso ? { lt: new Date(toIso) } : {}),
+      };
+    }
     const rows = await this.prisma.appointment.findMany({
-      where: status ? { status } : {},
+      where,
       include: INCLUDE,
       orderBy: { scheduledAt: 'desc' },
     });

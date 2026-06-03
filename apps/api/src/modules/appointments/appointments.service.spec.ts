@@ -155,3 +155,32 @@ describe('AppointmentsService.listForUser', () => {
     expect(call.orderBy).toEqual({ scheduledAt: 'desc' });
   });
 });
+
+describe('AppointmentsService.listAdmin range filter', () => {
+  beforeEach(() => { mockReset(prisma); mockReset(availability); mockReset(services); });
+
+  it('filters by scheduledAt range when from/to are given', async () => {
+    (prisma.appointment as any).findMany.mockResolvedValueOnce([]);
+    await svc.listAdmin(undefined, '2026-06-01T00:00:00.000Z', '2026-06-08T00:00:00.000Z');
+    const call = (prisma.appointment.findMany as jest.Mock).mock.calls[0][0];
+    expect(call.where.scheduledAt).toEqual({
+      gte: new Date('2026-06-01T00:00:00.000Z'),
+      lt: new Date('2026-06-08T00:00:00.000Z'),
+    });
+  });
+
+  it('combines status and range', async () => {
+    (prisma.appointment as any).findMany.mockResolvedValueOnce([]);
+    await svc.listAdmin('scheduled' as any, '2026-06-01T00:00:00.000Z', '2026-06-08T00:00:00.000Z');
+    const call = (prisma.appointment.findMany as jest.Mock).mock.calls[0][0];
+    expect(call.where.status).toBe('scheduled');
+    expect(call.where.scheduledAt.gte).toEqual(new Date('2026-06-01T00:00:00.000Z'));
+  });
+
+  it('no range filter when from/to omitted', async () => {
+    (prisma.appointment as any).findMany.mockResolvedValueOnce([]);
+    await svc.listAdmin();
+    const call = (prisma.appointment.findMany as jest.Mock).mock.calls[0][0];
+    expect(call.where.scheduledAt).toBeUndefined();
+  });
+});
