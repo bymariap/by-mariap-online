@@ -53,6 +53,12 @@ export class AvailabilityService {
     await this.prisma.specialistAvailability.delete({ where: { id } });
   }
 
+  async removeAny(id: string) {
+    const row = await this.prisma.specialistAvailability.findUnique({ where: { id } });
+    if (!row) throw new NotFoundException();
+    await this.prisma.specialistAvailability.delete({ where: { id } });
+  }
+
   async getSlots(input: { serviceId: string; specialistId: string; date: string }) {
     const service = await this.services!.findById(input.serviceId);
 

@@ -107,3 +107,21 @@ describe('AvailabilityService.getSlots', () => {
     expect(slots).toEqual([]);
   });
 });
+
+describe('AvailabilityService.removeAny', () => {
+  beforeEach(() => mockReset(prisma));
+
+  it('deletes any window without an ownership check', async () => {
+    (prisma.specialistAvailability as any).findUnique.mockResolvedValueOnce({
+      id: 'a1', specialistId: 's2',
+    });
+    (prisma.specialistAvailability as any).delete.mockResolvedValueOnce({ id: 'a1' });
+    await svc.removeAny('a1');
+    expect(prisma.specialistAvailability.delete).toHaveBeenCalledWith({ where: { id: 'a1' } });
+  });
+
+  it('throws 404 when the window does not exist', async () => {
+    (prisma.specialistAvailability as any).findUnique.mockResolvedValueOnce(null);
+    await expect(svc.removeAny('x')).rejects.toBeInstanceOf(NotFoundException);
+  });
+});
