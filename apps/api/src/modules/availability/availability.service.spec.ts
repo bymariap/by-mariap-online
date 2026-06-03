@@ -8,6 +8,20 @@ const prisma = mockDeep<PrismaService>();
 const servicesStub = mockDeep<ServicesService>();
 const svc = new AvailabilityService(prisma, servicesStub);
 
+describe('AvailabilityService.resolveSpecialistId', () => {
+  beforeEach(() => mockReset(prisma));
+
+  it('returns the specialist id for a user with a profile', async () => {
+    (prisma.specialist as any).findUnique.mockResolvedValueOnce({ id: 's1', userId: 'u1' });
+    await expect(svc.resolveSpecialistId('u1')).resolves.toBe('s1');
+  });
+
+  it('throws when the user has no specialist profile', async () => {
+    (prisma.specialist as any).findUnique.mockResolvedValueOnce(null);
+    await expect(svc.resolveSpecialistId('u1')).rejects.toBeInstanceOf(BadRequestException);
+  });
+});
+
 describe('AvailabilityService.publish', () => {
   beforeEach(() => mockReset(prisma));
 

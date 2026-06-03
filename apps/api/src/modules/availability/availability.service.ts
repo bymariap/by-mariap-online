@@ -11,6 +11,14 @@ import { fromZonedTime, formatInTimeZone } from 'date-fns-tz';
 export class AvailabilityService {
   constructor(private prisma: PrismaService, private services: ServicesService) {}
 
+  // Resolves the specialist profile id from the user id (source of truth in DB),
+  // so it works even if the JWT was issued before the profile was assigned.
+  async resolveSpecialistId(userId: string): Promise<string> {
+    const sp = await this.prisma.specialist.findUnique({ where: { userId } });
+    if (!sp) throw new BadRequestException('User is not a specialist');
+    return sp.id;
+  }
+
   async publish(specialistId: string, dto: PublishAvailabilityDto) {
     if (dto.startMinute >= dto.endMinute) {
       throw new BadRequestException('startMinute must be < endMinute');

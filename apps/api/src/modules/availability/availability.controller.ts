@@ -26,26 +26,28 @@ export class AvailabilityController {
     return this.svc.getSlots({ serviceId, specialistId, date });
   }
 
-  // Specialist publishing their own windows.
+  // Specialist publishing their own windows. The specialist id is resolved from
+  // the DB by user id (not the JWT), so a freshly assigned profile works without
+  // re-login.
   @Post('me/availability')
   @RequirePermissions('availability:write:own')
-  publishMine(@CurrentUser() user: AuthUser, @Body() dto: PublishAvailabilityDto) {
-    if (!user.specialistId) throw new BadRequestException('User is not a specialist');
-    return this.svc.publish(user.specialistId, dto);
+  async publishMine(@CurrentUser() user: AuthUser, @Body() dto: PublishAvailabilityDto) {
+    const specialistId = await this.svc.resolveSpecialistId(user.id);
+    return this.svc.publish(specialistId, dto);
   }
 
   @Get('me/availability')
   @RequirePermissions('availability:write:own')
-  listMine(@CurrentUser() user: AuthUser, @Query() q: ListAvailabilityQuery) {
-    if (!user.specialistId) throw new BadRequestException('User is not a specialist');
-    return this.svc.listForSpecialist(user.specialistId, q.fromDate, q.toDate);
+  async listMine(@CurrentUser() user: AuthUser, @Query() q: ListAvailabilityQuery) {
+    const specialistId = await this.svc.resolveSpecialistId(user.id);
+    return this.svc.listForSpecialist(specialistId, q.fromDate, q.toDate);
   }
 
   @Delete('me/availability/:id')
   @RequirePermissions('availability:write:own')
-  removeMine(@CurrentUser() user: AuthUser, @Param('id') id: string) {
-    if (!user.specialistId) throw new BadRequestException('User is not a specialist');
-    return this.svc.remove(user.specialistId, id);
+  async removeMine(@CurrentUser() user: AuthUser, @Param('id') id: string) {
+    const specialistId = await this.svc.resolveSpecialistId(user.id);
+    return this.svc.remove(specialistId, id);
   }
 
   // Admin can read any specialist's windows.
