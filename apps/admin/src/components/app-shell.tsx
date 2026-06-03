@@ -20,11 +20,15 @@ const nav: NavItem[] = [
   { to: "/users", label: "Usuarios", visible: isAdmin },
   { to: "/specialists", label: "Especialistas", visible: isAdmin },
   { to: "/services", label: "Servicios", visible: isAdmin },
-  // "Mi agenda" depends on having a specialist profile, regardless of role —
-  // an admin who also provides services gets it once a profile is assigned.
-  { to: "/mi-agenda", label: "Mi agenda", visible: hasSpecialistProfile },
+  // "Mi agenda": specialists manage their own; admins manage any specialist's
+  // agenda via the in-page selector, even without a profile of their own.
+  { to: "/mi-agenda", label: "Mi agenda", visible: (u) => isAdmin(u) || hasSpecialistProfile(u) },
   // Admin sees all appointments; a specialist sees their own.
-  { to: "/citas", label: "Citas", visible: (u) => isAdmin(u) || isSpecialistRole(u) },
+  {
+    to: "/citas",
+    label: "Citas",
+    visible: (u) => isAdmin(u) || isSpecialistRole(u),
+  },
 ];
 
 export function AppShell() {
@@ -40,7 +44,7 @@ export function AppShell() {
   return (
     <div className="min-h-screen grid grid-cols-[220px_1fr]">
       <aside className="bg-muted border-r border-border p-4 flex flex-col gap-4">
-        <div className="font-semibold">by mariap</div>
+        <div className="font-semibold">By MariaP - Admin</div>
         <nav className="flex flex-col gap-1">
           {visibleNav.map((n) => (
             <NavLink
@@ -60,7 +64,10 @@ export function AppShell() {
           ))}
         </nav>
         <div className="mt-auto pt-4 border-t border-border space-y-2">
-          <div className="text-xs text-muted-foreground truncate" title={user?.email}>
+          <div
+            className="text-xs text-muted-foreground truncate"
+            title={user?.email}
+          >
             {user?.email}
           </div>
           <Button
