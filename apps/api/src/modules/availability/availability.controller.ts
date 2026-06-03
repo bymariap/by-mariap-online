@@ -8,6 +8,7 @@ import type { AuthUser } from '../../common/types/auth-user';
 import { AvailabilityService } from './availability.service';
 import { PublishAvailabilityDto } from './dto/publish-availability.dto';
 import { ListAvailabilityQuery } from './dto/list-availability.query';
+import { AdminPublishAvailabilityDto } from './dto/admin-publish-availability.dto';
 
 @Controller()
 export class AvailabilityController {
@@ -56,5 +57,23 @@ export class AvailabilityController {
   listAny(@Query() q: ListAvailabilityQuery) {
     if (!q.specialistId) throw new BadRequestException('specialistId required');
     return this.svc.listForSpecialist(q.specialistId, q.fromDate, q.toDate);
+  }
+
+  // Admin can publish a window for any specialist.
+  @Post('admin/availability')
+  @RequirePermissions('availability:write')
+  publishAny(@Body() dto: AdminPublishAvailabilityDto) {
+    return this.svc.publish(dto.specialistId, {
+      date: dto.date,
+      startMinute: dto.startMinute,
+      endMinute: dto.endMinute,
+    });
+  }
+
+  // Admin can delete any window.
+  @Delete('admin/availability/:id')
+  @RequirePermissions('availability:write')
+  removeAny(@Param('id') id: string) {
+    return this.svc.removeAny(id);
   }
 }
