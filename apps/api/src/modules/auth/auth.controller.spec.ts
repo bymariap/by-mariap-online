@@ -59,11 +59,59 @@ describe("AuthController", () => {
     );
   });
 
-  it("clears cookies on logout", async () => {
+  it("clears cookies on logout with matching cookie options (so prod domain cookies are removed)", async () => {
     const res: any = { clearCookie: jest.fn(), json: jest.fn() };
     await ctrl.logout({ cookies: { refresh_token: "r" } } as any, res);
     expect(svc.logout).toHaveBeenCalledWith("r");
-    expect(res.clearCookie).toHaveBeenCalledWith("access_token");
-    expect(res.clearCookie).toHaveBeenCalledWith("refresh_token");
+    expect(res.clearCookie).toHaveBeenCalledWith(
+      "access_token",
+      expect.objectContaining({ httpOnly: true, path: "/" }),
+    );
+    expect(res.clearCookie).toHaveBeenCalledWith(
+      "refresh_token",
+      expect.objectContaining({ httpOnly: true, path: "/" }),
+    );
+  });
+
+  it("forces Secure when sameSite=none (browsers reject None without Secure)", async () => {
+    const prev = process.env.COOKIE_SAMESITE;
+    process.env.COOKIE_SAMESITE = "none";
+    svc.login.mockResolvedValueOnce({
+      accessToken: makeAccessToken("u1"),
+      refreshToken: "r",
+    });
+    const res: any = { cookie: jest.fn(), clearCookie: jest.fn(), json: jest.fn() };
+    await ctrl.login(
+      { email: "a@b.c", password: "pw123456" },
+      { cookies: {} } as any,
+      res,
+    );
+    expect(res.cookie).toHaveBeenCalledWith(
+      "access_token",
+      expect.any(String),
+      expect.objectContaining({ sameSite: "none", secure: true }),
+    );
+    process.env.COOKIE_SAMESITE = prev;
+  });
+
+  it("defaults to sameSite=lax when COOKIE_SAMESITE is unset", async () => {
+    const prev = process.env.COOKIE_SAMESITE;
+    delete process.env.COOKIE_SAMESITE;
+    svc.login.mockResolvedValueOnce({
+      accessToken: makeAccessToken("u1"),
+      refreshToken: "r",
+    });
+    const res: any = { cookie: jest.fn(), clearCookie: jest.fn(), json: jest.fn() };
+    await ctrl.login(
+      { email: "a@b.c", password: "pw123456" },
+      { cookies: {} } as any,
+      res,
+    );
+    expect(res.cookie).toHaveBeenCalledWith(
+      "access_token",
+      expect.any(String),
+      expect.objectContaining({ sameSite: "lax" }),
+    );
+    process.env.COOKIE_SAMESITE = prev;
   });
 });

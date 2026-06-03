@@ -14,13 +14,22 @@ import { TokenPair } from "./auth.types";
 import { CartService } from "../cart/cart.service";
 import { GUEST_TOKEN_COOKIE, clearGuestToken } from "../cart/guest-token";
 
-const cookieOpts = () => ({
-  httpOnly: true,
-  sameSite: "lax" as const,
-  secure: process.env.COOKIE_SECURE === "true",
-  domain: process.env.COOKIE_DOMAIN,
-  path: "/",
-});
+const cookieOpts = () => {
+  const sameSite = (process.env.COOKIE_SAMESITE ?? "lax") as
+    | "lax"
+    | "strict"
+    | "none";
+  // Browsers reject SameSite=None cookies that are not also Secure, so force it.
+  const secure =
+    sameSite === "none" ? true : process.env.COOKIE_SECURE === "true";
+  return {
+    httpOnly: true,
+    sameSite,
+    secure,
+    domain: process.env.COOKIE_DOMAIN,
+    path: "/",
+  };
+};
 
 @Controller("auth")
 export class AuthController {
@@ -70,8 +79,10 @@ export class AuthController {
   @Post("logout")
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     await this.auth.logout(req.cookies?.refresh_token);
-    res.clearCookie("access_token");
-    res.clearCookie("refresh_token");
+    // Pass the same options used when setting the cookies — clearCookie only
+    // removes a cookie when domain/path/sameSite match the original.
+    res.clearCookie("access_token", cookieOpts());
+    res.clearCookie("refresh_token", cookieOpts());
     res.json({ ok: true });
   }
 
