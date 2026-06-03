@@ -18,9 +18,9 @@ interface FormValues {
   avatarUrl: string;
 }
 
-// Roles whose users can be turned into bookable specialists. The owner-admin
-// who also provides services is a valid case, so admin is eligible too.
-const ELIGIBLE_ROLES = ["specialist", "admin"];
+// Only users with the "specialist" role can receive a specialist profile —
+// the backend enforces this in SpecialistsService.upsert.
+const ELIGIBLE_ROLES = ["specialist"];
 
 export function SpecialistFormDialog({
   open,
@@ -116,8 +116,8 @@ export function SpecialistFormDialog({
           )}
           {!editing && eligibleUsers.length === 0 && (
             <p className="text-xs text-muted-foreground">
-              Crea primero un usuario con rol &quot;specialist&quot; (o usa una
-              cuenta admin) que aún no tenga perfil.
+              Crea primero un usuario con rol &quot;specialist&quot; que aún no
+              tenga perfil.
             </p>
           )}
         </div>
