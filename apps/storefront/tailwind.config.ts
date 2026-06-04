@@ -6,31 +6,32 @@ export default {
     container: { center: true, padding: "1.5rem" },
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        border: "var(--border)",
+        background: "rgb(var(--background) / <alpha-value>)",
+        foreground: "rgb(var(--foreground) / <alpha-value>)",
+        border: "rgb(var(--border) / <alpha-value>)",
         primary: {
-          DEFAULT: "var(--primary)",
-          foreground: "var(--primary-foreground)",
+          DEFAULT: "rgb(var(--primary) / <alpha-value>)",
+          foreground: "rgb(var(--primary-foreground) / <alpha-value>)",
         },
         muted: {
-          DEFAULT: "var(--muted)",
-          foreground: "var(--muted-foreground)",
+          DEFAULT: "rgb(var(--muted) / <alpha-value>)",
+          foreground: "rgb(var(--muted-foreground) / <alpha-value>)",
         },
         accent: {
-          DEFAULT: "var(--accent)",
-          foreground: "var(--accent-foreground)",
-          container: "var(--accent-container)",
-          "container-foreground": "var(--accent-container-foreground)",
+          DEFAULT: "rgb(var(--accent) / <alpha-value>)",
+          foreground: "rgb(var(--accent-foreground) / <alpha-value>)",
+          container: "rgb(var(--accent-container) / <alpha-value>)",
+          "container-foreground":
+            "rgb(var(--accent-container-foreground) / <alpha-value>)",
         },
         destructive: {
-          DEFAULT: "var(--destructive)",
-          foreground: "var(--destructive-foreground)",
+          DEFAULT: "rgb(var(--destructive) / <alpha-value>)",
+          foreground: "rgb(var(--destructive-foreground) / <alpha-value>)",
         },
         surface: {
-          DEFAULT: "var(--surface)",
-          lowest: "var(--surface-lowest)",
-          high: "var(--surface-high)",
+          DEFAULT: "rgb(var(--surface) / <alpha-value>)",
+          lowest: "rgb(var(--surface-lowest) / <alpha-value>)",
+          high: "rgb(var(--surface-high) / <alpha-value>)",
         },
       },
       borderRadius: {
