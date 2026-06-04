@@ -47,3 +47,24 @@
     font-family: var(--font-heading);
   }
 }
+
+@layer components {
+  .t-eyebrow {
+    @apply font-body text-sm uppercase tracking-[0.2em] text-accent;
+  }
+  .t-hero {
+    @apply font-heading text-5xl md:text-6xl font-light tracking-tight;
+  }
+  .t-display {
+    @apply font-heading text-4xl md:text-5xl font-light tracking-tight;
+  }
+  .t-section {
+    @apply font-heading text-2xl font-light;
+  }
+  .t-sub-italic {
+    @apply font-heading text-xl italic;
+  }
+  .t-card {
+    @apply font-heading text-lg;
+  }
+}
