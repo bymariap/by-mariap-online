@@ -263,5 +263,5 @@ Markup de referencia Stitch:
 ## Apéndice — Notas de método y limitaciones
 
 - La comparación se basó en el **HTML de referencia de Stitch** (clases Tailwind exactas + `tailwind.config` embebido), que es la fuente más precisa para tokens. No se renderizó el storefront en vivo; las discrepancias de **estados hover/carga/error** se infirieron del código (que sí los implementa: loading, vacío, error de envío, toasts).
-- Stitch usa `darkMode: "class"` (tiene variantes dark). El storefront **no implementa dark mode**. → **Resuelto en triage: se implementará** (ver [decisiones](./2026-06-01-storefront-design-decisions.md) D5). Amplía la fase de tokens con variantes dark.
+- Stitch usa `darkMode: "class"` pero **no tiene un dark mode real diseñado** (solo clases `dark:bg-stone-*` sueltas). El storefront tampoco lo implementa. → **Resuelto en triage: fuera del MVP** (ver [decisiones](./2026-06-01-storefront-design-decisions.md) D5/V2).
 - Algunas divergencias (checkout sin paso de pago propio por usar Wompi redirect; booking partido en 2 páginas) parecen **decisiones de producto intencionales** y se marcaron como "documentar", no como bug de diseño.
