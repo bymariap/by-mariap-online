@@ -150,7 +150,7 @@ Markup de referencia Stitch:
 | **Media** | Jerarquía de texto | Overline "Cuidado en Estudio" + **H2 "Diseño y recuperación experta"**. | "Cuidado en Estudio" es el **H2**; "Diseño y recuperación experta" quedó enterrado en el body. | `page.tsx:116-123` | Restaurar la jerarquía: overline + H2 correcto. |
 | **Media** | Eyebrow/overline | `<span text-secondary uppercase tracking-[0.2em] text-sm>`. | No existe. | `page.tsx:115-117` | Añadir el overline en `accent`/secondary. |
 | **Media** | Alineación + contenedor | Contenido **a la izquierda** (`max-w-xl`) dentro de **card** `rounded-xl p-12 md:p-24 bg-surface-container-highest`. | Centrado (`text-center max-w-xl mx-auto`), sin card; sección `bg-muted`. | `page.tsx:114-115` | Envolver en card a la izquierda (radio xl, G5). |
-| **Media** | CTA | **Marrón** `bg-secondary text-on-secondary px-8 py-4` (activo) + ícono `calendar_today`. | **Gris** `bg-primary opacity-50 cursor-not-allowed`, sin ícono. ⚠️ Estado deshabilitado puede ser intencional (booking no activo). | `page.tsx:124-130` | Aplicar estilo marrón + ícono. Decisión a confirmar: ¿activo o deshabilitado? |
+| **Media** | CTA | **Marrón** `bg-secondary text-on-secondary px-8 py-4` (activo) + ícono `calendar_today`. | **Gris** `bg-primary opacity-50 cursor-not-allowed`, sin ícono. → **Triage (V4): bug de fidelidad**; el booking sí existe (`/servicios`). | `page.tsx:124-130` | **Activar** el botón, estilo marrón + ícono, enlazar a `/servicios` (ver [decisiones](./2026-06-01-storefront-design-decisions.md) V4). |
 | **Baja** | Body | `text-lg font-light`. | `text-sm`. | `page.tsx:119-123` | Subir a `text-lg` peso light. |
 | **Baja** | H2 tamaño/peso | `text-4xl md:text-5xl font-serif`. | `text-3xl font-semibold`. | `page.tsx:116-118` | G1. |
 
@@ -263,5 +263,5 @@ Markup de referencia Stitch:
 ## Apéndice — Notas de método y limitaciones
 
 - La comparación se basó en el **HTML de referencia de Stitch** (clases Tailwind exactas + `tailwind.config` embebido), que es la fuente más precisa para tokens. No se renderizó el storefront en vivo; las discrepancias de **estados hover/carga/error** se infirieron del código (que sí los implementa: loading, vacío, error de envío, toasts).
-- Stitch usa `darkMode: "class"` (tiene variantes dark). El storefront **no implementa dark mode**. No se reporta como discrepancia porque no se indicó soporte dark como requisito; anotarlo como decisión pendiente.
+- Stitch usa `darkMode: "class"` (tiene variantes dark). El storefront **no implementa dark mode**. → **Resuelto en triage: se implementará** (ver [decisiones](./2026-06-01-storefront-design-decisions.md) D5). Amplía la fase de tokens con variantes dark.
 - Algunas divergencias (checkout sin paso de pago propio por usar Wompi redirect; booking partido en 2 páginas) parecen **decisiones de producto intencionales** y se marcaron como "documentar", no como bug de diseño.
