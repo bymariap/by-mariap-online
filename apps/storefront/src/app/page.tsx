@@ -47,7 +47,7 @@ export default async function HomePage() {
       <section className="relative min-h-[80vh] flex items-center overflow-hidden">
         {/* TODO(asset): imagen de fondo del hero — reemplazar este div por <Image fill> */}
         <div className="absolute inset-0 bg-muted" aria-hidden />
-        <div className="container relative z-10 max-w-xl px-8 md:px-16 space-y-6">
+        <div className="relative z-10 max-w-xl px-8 md:px-16 space-y-6">
           <p className="t-eyebrow">Digital Atelier • Medellín</p>
           <h1 className="t-hero text-foreground">
             Recupera la belleza natural de tus cejas
