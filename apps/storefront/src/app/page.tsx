@@ -1,11 +1,35 @@
 import Link from "next/link";
-import { Package, MapPin, ShieldCheck } from "lucide-react";
 import { serverFetch } from "@/lib/api/server";
 import { endpoints } from "@/lib/api/endpoints";
 import { ProductCard } from "@/components/product-card";
 import type { ProductDTO } from "@bymariap/types";
+import LocalShipping from "@material-symbols/svg-300/outlined/local_shipping.svg?react";
+import LocationOn from "@material-symbols/svg-300/outlined/location_on.svg?react";
+import VerifiedUser from "@material-symbols/svg-300/outlined/verified_user.svg?react";
+import CalendarToday from "@material-symbols/svg-300/outlined/calendar_today.svg?react";
 
 export const revalidate = 60;
+
+const trustItems = [
+  {
+    Icon: LocalShipping,
+    circle: "bg-accent-container text-accent-container-foreground",
+    title: "Envíos en Medellín y Colombia",
+    body: "Logística premium para que tus productos lleguen en perfecto estado.",
+  },
+  {
+    Icon: LocationOn,
+    circle: "bg-muted text-foreground",
+    title: "Ubicación en El Poblado",
+    body: "Un santuario de belleza diseñado para tu relajación y transformación.",
+  },
+  {
+    Icon: VerifiedUser,
+    circle: "bg-surface-high text-foreground",
+    title: "Productos Certificados",
+    body: "Fórmulas dermatológicamente testeadas para la salud de tu piel y vello.",
+  },
+];
 
 export default async function HomePage() {
   let products: ProductDTO[] = [];
@@ -20,15 +44,15 @@ export default async function HomePage() {
   return (
     <>
       {/* ── HERO ── */}
-      <section className="bg-background py-32 text-center">
-        <div className="container max-w-3xl mx-auto space-y-6">
-          <p className="text-xs font-body font-medium uppercase tracking-widest text-muted-foreground">
-            Digital Atelier • Medellín
-          </p>
-          <h1 className="font-heading text-5xl md:text-6xl font-semibold leading-tight text-foreground">
+      <section className="relative min-h-[80vh] flex items-center overflow-hidden">
+        {/* TODO(asset): imagen de fondo del hero — reemplazar este div por <Image fill> */}
+        <div className="absolute inset-0 bg-muted" aria-hidden />
+        <div className="container relative z-10 max-w-xl px-8 md:px-16 space-y-6">
+          <p className="t-eyebrow">Digital Atelier • Medellín</p>
+          <h1 className="t-hero text-foreground">
             Recupera la belleza natural de tus cejas
           </h1>
-          <p className="font-body text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
+          <p className="font-body text-base md:text-lg font-light text-muted-foreground max-w-md leading-relaxed">
             Productos premium y servicios expertos en el corazón de Medellín.
             Redescubre tu mirada con un enfoque minimalista y orgánico.
           </p>
@@ -42,35 +66,50 @@ export default async function HomePage() {
       </section>
 
       {/* ── TRUST INDICATORS ── */}
-      <section className="bg-muted py-16">
-        <div className="container grid grid-cols-1 md:grid-cols-3 gap-10">
-          {[
-            {
-              icon: <Package className="h-6 w-6" strokeWidth={1.5} />,
-              title: "Envíos en Medellín y Colombia",
-              body: "Logística premium para que tus productos lleguen en perfecto estado.",
-            },
-            {
-              icon: <MapPin className="h-6 w-6" strokeWidth={1.5} />,
-              title: "Ubicación en El Poblado",
-              body: "Un santuario de belleza diseñado para tu relajación y transformación.",
-            },
-            {
-              icon: <ShieldCheck className="h-6 w-6" strokeWidth={1.5} />,
-              title: "Productos Certificados",
-              body: "Fórmulas dermatológicamente testeadas para la salud de tu piel y vello.",
-            },
-          ].map((item) => (
-            <div key={item.title} className="flex flex-col gap-3">
-              <span className="text-foreground">{item.icon}</span>
-              <h3 className="font-heading text-base font-semibold text-foreground">
-                {item.title}
-              </h3>
-              <p className="font-body text-sm text-muted-foreground leading-relaxed">
-                {item.body}
+      <section className="bg-surface py-20">
+        <div className="container grid grid-cols-1 md:grid-cols-3 gap-16">
+          {trustItems.map(({ Icon, circle, title, body }) => (
+            <div
+              key={title}
+              className="flex flex-col items-center text-center gap-4"
+            >
+              <span
+                className={`w-16 h-16 rounded-full flex items-center justify-center ${circle}`}
+              >
+                <Icon className="h-7 w-7" />
+              </span>
+              <h3 className="font-heading text-xl text-foreground">{title}</h3>
+              <p className="font-body text-sm font-light text-muted-foreground leading-relaxed">
+                {body}
               </p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ── TRANSFORMACIONES (placeholder) ── */}
+      <section id="galeria" className="bg-muted py-24">
+        <div className="container space-y-10">
+          <div className="flex items-end justify-between gap-6">
+            <div className="space-y-2">
+              <p className="t-eyebrow">Transformaciones</p>
+              <h2 className="t-display text-foreground">
+                Nuestras transformaciones
+              </h2>
+            </div>
+            <Link
+              href="/#galeria"
+              className="font-body text-sm text-muted-foreground hover:text-foreground transition-colors shrink-0"
+            >
+              Ver Galería Completa →
+            </Link>
+          </div>
+          {/* TODO(backend): galería real de transformaciones (antes/después) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="aspect-[4/5] bg-surface-high rounded-xl" />
+            ))}
+          </div>
         </div>
       </section>
 
@@ -78,10 +117,10 @@ export default async function HomePage() {
       <section className="bg-background py-24">
         <div className="container space-y-10">
           <div className="space-y-2">
-            <h2 className="font-heading text-3xl font-semibold text-foreground">
+            <h2 className="t-display text-foreground">
               Esenciales para tus cejas
             </h2>
-            <p className="font-body text-sm text-muted-foreground">
+            <p className="font-body text-sm md:text-base font-light text-muted-foreground">
               Nuestra curaduría de productos diseñados para fortalecer y
               embellecer desde casa.
             </p>
@@ -94,7 +133,7 @@ export default async function HomePage() {
               ))}
             </div>
           ) : (
-            <p className="font-body text-sm text-muted-foreground">
+            <p className="font-body text-sm font-light text-muted-foreground">
               Los productos se cargarán cuando la tienda esté activa.
             </p>
           )}
@@ -110,24 +149,27 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ── SERVICES TEASER ── */}
-      <section className="bg-muted py-24">
-        <div className="container max-w-xl mx-auto text-center space-y-6">
-          <h2 className="font-heading text-3xl font-semibold text-foreground">
-            Cuidado en Estudio
-          </h2>
-          <p className="font-body text-sm text-muted-foreground leading-relaxed">
-            Diseño y recuperación experta. Agenda una sesión personalizada donde
-            evaluamos la salud de tus folículos y diseñamos un plan de
-            recuperación a medida.
-          </p>
-          <button
-            disabled
-            aria-disabled="true"
-            className="inline-flex items-center gap-2 h-12 px-8 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium opacity-50 cursor-not-allowed"
-          >
-            Agendar Cita (Próximamente)
-          </button>
+      {/* ── SERVICES BANNER ── */}
+      <section className="py-24 px-8">
+        <div className="container relative rounded-xl overflow-hidden min-h-[500px] flex items-center p-12 md:p-24 bg-surface-high">
+          {/* TODO(asset): imagen del estudio — reemplazar este div por <Image fill> */}
+          <div className="absolute inset-0 bg-muted opacity-60" aria-hidden />
+          <div className="relative z-10 max-w-xl space-y-6">
+            <span className="t-eyebrow">Cuidado en Estudio</span>
+            <h2 className="t-display text-foreground">
+              Diseño y recuperación experta
+            </h2>
+            <p className="font-body text-lg font-light text-muted-foreground">
+              Agenda una sesión personalizada donde evaluamos la salud de tus
+              folículos y diseñamos un plan de recuperación a medida.
+            </p>
+            <Link
+              href="/servicios"
+              className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-accent text-accent-foreground font-body text-sm font-medium hover:opacity-90 transition-opacity"
+            >
+              Agendar Cita <CalendarToday className="h-5 w-5" />
+            </Link>
+          </div>
         </div>
       </section>
     </>
