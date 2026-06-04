@@ -56,7 +56,7 @@ El storefront colapsó el set de tokens Material 3 de Stitch en un set reducido 
 | # | Severidad | Qué dice Stitch | Qué hay hoy | Archivo:línea | Recomendación |
 |---|---|---|---|---|---|
 | G1 | **Alta** | Peso tipográfico de los headings display es **light / normal** (`font-light`, `font-normal`) sobre serif grande con `tracking-tight` — estética editorial y aireada. Aparece en hero, carrito (`font-light`), checkout (`font-normal`), confirmación (`font-light`), perfil, dashboard. | Todos los headings usan `font-semibold` (600), sin `tracking-tight`. Resulta más pesado/compacto que el diseño. | `src/app/index.css:37-44` (base) + cada `h1/h2` de las pages | Definir clase/escala de heading con peso `font-normal`/`font-light` y `tracking-tight` para los display (≥text-3xl). Reservar semibold solo para sub-títulos pequeños. |
-| G2 | **Alta** | El set de color incluye `secondary-container: #fadec0` (durazno cálido) usado como **acento de marca** (badges, highlights, status) en las 13 screens. | El token peach NO existe en `index.css`. Solo aparece **hardcodeado inline** una vez (`background: "#fadec0"`) en el carrito. | `src/app/index.css:6-19` (falta) · uso suelto en `src/app/carrito/page.tsx:166` | Añadir tokens `--secondary-container: #fadec0` y `--on-secondary-container` y exponerlos en `tailwind.config.ts`. Reemplazar el hex inline por el token. |
+| G2 | **Alta** | El set de color incluye `secondary-container: #fadec0` (durazno cálido) usado como **acento de marca** (badges, highlights, status, círculos de íconos — ver 3.1.1) en las 13 screens. También se usan otros containers tonales (`tertiary-container #f4f4ef`, `surface-container-highest #e2e3db`) que el storefront colapsó. | El token peach NO existe en `index.css`. Solo aparece **hardcodeado inline** una vez (`background: "#fadec0"`) en el carrito. | `src/app/index.css:6-19` (falta) · uso suelto en `src/app/carrito/page.tsx:166` | Añadir `--secondary-container: #fadec0` + `--on-secondary-container`, y `--tertiary-container`/`--surface-container-highest` donde el diseño los usa; exponerlos en `tailwind.config.ts`. Reemplazar el hex inline por el token. |
 | G3 | **Media** | `primary: #5f5e5e` (gris/taupe medio). Los CTA `bg-primary` se ven taupe, no negros. | `--primary: #1a1a1a` (casi negro). Botones primarios mucho más oscuros/contrastados que el diseño. | `src/app/index.css:11` | Decidir intención de marca. Si se quiere fidelidad con Stitch, subir `--primary` hacia `#5f5e5e` (o un taupe oscuro intermedio). Documentar la decisión. |
 | G4 | **Media** | `secondary: #705b44` (marrón) se usa como **CTA alterno y color de texto de acento** (p.ej. nombres de ingredientes `text-secondary`, hover de links del carrito). | `--accent: #705b44` existe pero solo se usa para focus-ring de inputs/botones; nunca como CTA ni como texto de acento. | `src/app/index.css:14` + componentes | Usar `accent`/secondary como segundo CTA y para textos de acento donde Stitch lo aplica (detalle de producto, links de carrito). |
 | G5 | **Media** | Escala de radios: `DEFAULT 4px`, `lg 8px`, **`xl 12px`**, `full`. Cards "editorial" usan `rounded-xl` (12px). | `--radius-md` y `--radius-lg` están ambos en `8px`; no existe el escalón de 12px. Las cards se renderizan a 8px. | `src/app/index.css:21-24` + `tailwind.config.ts:33-38` | Añadir `--radius-xl: 12px` y usarlo en las cards con sombra editorial (login, resumen, service-card, etc.). |
@@ -96,9 +96,36 @@ Formato de cada fila: **Severidad** · Stitch dice → Hoy hay · `archivo:líne
 | **Alta** | Hero full-bleed con **imagen** y altura `min-h-[921px]`, texto alineado a la izquierda (`flex items-center px-8 md:px-16`). | Hero **sin imagen**, banda centrada `py-32 text-center max-w-3xl`. El titular y subtítulo coinciden literalmente, pero el layout es otro. | `page.tsx:23-42` | Implementar hero con imagen de fondo/lateral, altura grande y texto a la izquierda. Mantener copy actual. |
 | **Alta** | Sección **"Nuestras transformaciones"** (galería de cards con overlay hover y botón). | No existe ninguna galería de transformaciones. | `page.tsx` (ausente) | Añadir sección de galería/antes-después entre trust y productos. |
 | **Media** | Nombres de producto en serif `text-lg` (`font-headline`). | `ProductCard` usa `text-sm font-body` (sans, chico). | `src/components/product-card.tsx:28-30` | Cambiar título de card a serif (`font-heading`) y subir a `text-base/text-lg`. |
-| **Media** | Trust cards con heading serif `text-xl`. | Trust cards con `text-base font-semibold`. | `page.tsx:66-68` | Subir headings de trust a serif `text-xl`. |
+| **Media** | **Sección de "trust indicators"** (ver detalle 3.1.1): íconos dentro de **círculo `w-16 h-16 rounded-full`** con fondo tonal de color, contenido **centrado**, heading serif `text-xl`, sección `bg-surface`. | Íconos **sin círculo de fondo**, contenido **alineado a la izquierda**, heading `text-base font-semibold` (sans), sección `bg-muted` (gris). | `page.tsx:44-75` | Ver sub-tabla 3.1.1. |
 | **Media** | Headings de sección serif `text-4xl md:text-5xl`. | `text-3xl font-semibold`. | `page.tsx:81,116` | Subir a `text-4xl/5xl` y peso light (ver G1). |
 | **Baja** | Nav incluye "Galería" y "Citas". | Nav: Inicio, Tienda, Servicios, Nosotros, Contacto (sin "Galería"; usa "Servicios" en vez de "Citas"). | `src/components/header.tsx:5-11` | Añadir "Galería" si se implementa la sección; alinear naming Citas/Servicios. |
+
+#### 3.1.1 Detalle de la sección "trust indicators" (recuadro señalado por el equipo)
+
+Markup de referencia Stitch (idéntico para los 3 items, cambia solo el color del círculo y el ícono):
+
+```html
+<div class="flex flex-col items-center text-center space-y-4">
+  <div class="w-16 h-16 rounded-full bg-secondary-container
+              flex items-center justify-center text-on-secondary-container">
+    <span class="material-symbols-outlined text-3xl">local_shipping</span>
+  </div>
+  <h3 class="font-serif text-xl">Envíos en Medellín y Colombia</h3>
+  <p class="text-on-surface-variant text-sm font-light">…</p>
+</div>
+```
+
+| Sev | Aspecto | Stitch dice | Hoy hay | Archivo:línea | Recomendación |
+|---|---|---|---|---|---|
+| **Media** | Círculo de fondo del ícono | Ícono dentro de `w-16 h-16 rounded-full` con fondo tonal. | Ícono sin contenedor (`<span class="text-foreground">`). | `page.tsx:64-65` | Envolver cada ícono en un círculo de 64px. |
+| **Media** | Color del círculo (3 distintos) | Item 1 `bg-secondary-container #fadec0` (peach), item 2 `bg-tertiary-container #f4f4ef`, item 3 `bg-surface-container-highest #e2e3db`. | Sin fondo. **Faltan 3 tokens** en `index.css` (peach G2 + `tertiary-container` + `surface-container-highest`). | `src/app/index.css:6-19` (faltan) | Añadir los 3 tokens y aplicarlos por item. |
+| **Media** | Color del ícono | `text-on-secondary-container` (marrón sobre peach), etc. | `text-foreground` (oscuro neutro). | `page.tsx:65` | Usar el `on-*-container` correspondiente. |
+| **Media** | Alineación | Centrada (`items-center text-center`). | Alineada a la izquierda (`flex flex-col gap-3`). | `page.tsx:64` | Centrar el contenido. |
+| **Media** | Heading | Serif `text-xl`. | `text-base font-semibold` (sans). | `page.tsx:66-68` | Pasar a `font-heading text-xl`. |
+| **Baja** | Fondo de sección | `bg-surface` (#fbf9f5, igual al body). | `bg-muted` (#f5f4ef, gris claro perceptible). | `page.tsx:45` | Cambiar a `bg-surface`/`bg-background`. |
+| **Baja** ⚠️ | Set de íconos | Material Symbols: `local_shipping` (camión), `location_on`, `verified_user`. | lucide-react: `Package` (caja), `MapPin`, `ShieldCheck`. No hay equivalentes 1:1 (caja ≠ camión). | `page.tsx:49,54,59` | **Decisión requerida**: adoptar Material Symbols, o mapear a los lucide más cercanos (`Truck`/`MapPin`/`ShieldCheck`). No se resuelve de forma arbitraria. |
+
+> Todas estas diferencias son **frontend**; ninguna depende del backend, por lo que son replicables salvo la elección de la librería de íconos (⚠️), que se deja a decisión del equipo.
 
 ### 3.2 Tienda (`/productos` → `src/app/productos/page.tsx`)
 
@@ -192,7 +219,7 @@ Formato de cada fila: **Severidad** · Stitch dice → Hoy hay · `archivo:líne
 ## 5. Top-10 priorizado de arreglos
 
 1. **(G1 / Alta)** Corregir el **peso tipográfico de los headings display**: pasar de `font-semibold` a `font-light`/`font-normal` + `tracking-tight` en todos los `h1/h2` ≥ text-3xl (hero, carrito, checkout, confirmación, perfil, pedidos). Es la desviación más visible y transversal. *(define el "look" editorial Luminous)*
-2. **(Home / Alta)** Rediseñar el **hero de la home** como hero con imagen full-height (`min-h` grande, texto a la izquierda) en lugar de la banda centrada sin imagen.
+2. **(Home / Alta)** Rediseñar el **hero de la home** como hero con imagen full-height (`min-h` grande, texto a la izquierda) en lugar de la banda centrada sin imagen. En la misma página, rehacer la **sección de "trust indicators"** (3.1.1): íconos en círculos tonales de color, contenido centrado, headings serif, fondo `bg-surface`. ⚠️ Decisión pendiente: librería de íconos (Material Symbols vs lucide).
 3. **(G2 / Alta)** Añadir el **token peach `secondary-container: #fadec0`** (+ `on-secondary-container`) a `index.css`/`tailwind.config.ts` y reemplazar el hex inline del carrito; es el acento de marca usado en las 13 screens.
 4. **(Detalle / Alta)** Construir las **secciones editoriales del detalle de producto** (Cómo usar, Ingredientes, Completa tu rutina); reseñas/FAQ quedan sujetas a datos de backend.
 5. **(G6 / Media)** Rediseñar **`OrderStatusPill`** como píldoras **tonales diferenciadas** (peach/surface) en vez de relleno sólido `bg-primary`.
