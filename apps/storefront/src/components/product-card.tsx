@@ -25,7 +25,7 @@ export function ProductCard({ product }: { product: ProductDTO }) {
         )}
       </div>
       <div className="mt-3 space-y-0.5">
-        <h3 className="text-sm font-body font-medium text-foreground">
+        <h3 className="t-card text-foreground">
           {product.name}
         </h3>
         <p className="text-sm font-body text-muted-foreground">
