@@ -2,12 +2,12 @@ import { cn } from '@/lib/cn';
 import type { OrderStatus } from '@bymariap/types';
 
 const styles: Record<OrderStatus, { label: string; className: string }> = {
-  pending:   { label: 'Pago pendiente',  className: 'bg-muted text-foreground' },
-  paid:      { label: 'Pagado',          className: 'bg-primary text-primary-foreground' },
-  preparing: { label: 'En preparación', className: 'bg-primary text-primary-foreground' },
-  shipped:   { label: 'Enviado',         className: 'bg-primary text-primary-foreground' },
-  delivered: { label: 'Entregado',       className: 'bg-primary text-primary-foreground' },
-  cancelled: { label: 'Cancelado',       className: 'bg-destructive text-destructive-foreground' },
+  pending:   { label: 'Pago pendiente', className: 'bg-muted text-muted-foreground' },
+  paid:      { label: 'Pagado',         className: 'bg-surface-high text-foreground' },
+  preparing: { label: 'En preparación', className: 'bg-surface-high text-foreground' },
+  shipped:   { label: 'Enviado',        className: 'bg-accent-container text-accent-container-foreground' },
+  delivered: { label: 'Entregado',      className: 'bg-accent-container text-accent-container-foreground' },
+  cancelled: { label: 'Cancelado',      className: 'bg-destructive/10 text-destructive' },
 };
 
 export function OrderStatusPill({ status }: { status: OrderStatus }) {
