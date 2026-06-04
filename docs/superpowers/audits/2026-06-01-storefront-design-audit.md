@@ -58,7 +58,7 @@ El storefront colapsó el set de tokens Material 3 de Stitch en un set reducido 
 | G1 | **Alta** | Peso tipográfico de los headings display es **light / normal** (`font-light`, `font-normal`) sobre serif grande con `tracking-tight` — estética editorial y aireada. Aparece en hero, carrito (`font-light`), checkout (`font-normal`), confirmación (`font-light`), perfil, dashboard. | Todos los headings usan `font-semibold` (600), sin `tracking-tight`. Resulta más pesado/compacto que el diseño. | `src/app/index.css:37-44` (base) + cada `h1/h2` de las pages | Definir clase/escala de heading con peso `font-normal`/`font-light` y `tracking-tight` para los display (≥text-3xl). Reservar semibold solo para sub-títulos pequeños. |
 | G2 | **Alta** | El set de color incluye `secondary-container: #fadec0` (durazno cálido) usado como **acento de marca** (badges, highlights, status, círculos de íconos — ver 3.1.1) en las 13 screens. También se usan otros containers tonales (`tertiary-container #f4f4ef`, `surface-container-highest #e2e3db`) que el storefront colapsó. | El token peach NO existe en `index.css`. Solo aparece **hardcodeado inline** una vez (`background: "#fadec0"`) en el carrito. | `src/app/index.css:6-19` (falta) · uso suelto en `src/app/carrito/page.tsx:166` | Añadir `--secondary-container: #fadec0` + `--on-secondary-container`, y `--tertiary-container`/`--surface-container-highest` donde el diseño los usa; exponerlos en `tailwind.config.ts`. Reemplazar el hex inline por el token. |
 | G3 | **Media** | `primary: #5f5e5e` (gris/taupe medio). Los CTA `bg-primary` se ven taupe, no negros. | `--primary: #1a1a1a` (casi negro). Botones primarios mucho más oscuros/contrastados que el diseño. | `src/app/index.css:11` | Decidir intención de marca. Si se quiere fidelidad con Stitch, subir `--primary` hacia `#5f5e5e` (o un taupe oscuro intermedio). Documentar la decisión. |
-| G4 | **Media** | `secondary: #705b44` (marrón) se usa como **CTA alterno y color de texto de acento** (p.ej. nombres de ingredientes `text-secondary`, hover de links del carrito). | `--accent: #705b44` existe pero solo se usa para focus-ring de inputs/botones; nunca como CTA ni como texto de acento. | `src/app/index.css:14` + componentes | Usar `accent`/secondary como segundo CTA y para textos de acento donde Stitch lo aplica (detalle de producto, links de carrito). |
+| G4 | **Media** | `secondary: #705b44` (marrón) se usa como **CTA alterno y color de texto de acento** (p.ej. overline + botón de "Cuidado en Estudio" 3.1.2, nombres de ingredientes `text-secondary`, hover de links del carrito). | `--accent: #705b44` existe pero solo se usa para focus-ring de inputs/botones; nunca como CTA ni como texto de acento. | `src/app/index.css:14` + componentes | Usar `accent`/secondary como segundo CTA y para textos de acento donde Stitch lo aplica (home services banner, detalle de producto, links de carrito). |
 | G5 | **Media** | Escala de radios: `DEFAULT 4px`, `lg 8px`, **`xl 12px`**, `full`. Cards "editorial" usan `rounded-xl` (12px). | `--radius-md` y `--radius-lg` están ambos en `8px`; no existe el escalón de 12px. Las cards se renderizan a 8px. | `src/app/index.css:21-24` + `tailwind.config.ts:33-38` | Añadir `--radius-xl: 12px` y usarlo en las cards con sombra editorial (login, resumen, service-card, etc.). |
 | G6 | **Media** | Las píldoras de estado de pedido son **suaves/tonales**: `Pagado` → `bg-surface-container-high text-primary`; `Enviado` → `bg-secondary-container/50 text-secondary`. Baja emfasis, diferenciadas por color. | `OrderStatusPill` usa **relleno sólido oscuro** `bg-primary text-primary-foreground` idéntico para `paid/preparing/shipped/delivered` (sin diferenciación de color). | `src/components/order-status-pill.tsx:5-10` | Rediseñar las píldoras como tonales (fondo `*-container`, texto de color), diferenciando estados (peach=enviado, etc.) como en Stitch. |
 | G7 | **Baja** | Pesos de fuente cargados: Manrope **300**;400;500;600 (usa 300 para texto fino). Noto Serif 400;700 + itálica 400. | `layout.tsx` carga Manrope 400-700 (sin 300) y Noto Serif 400-700. Falta el peso 300 que el diseño usa, y la itálica de Noto Serif. | `src/app/layout.tsx:7-19` | Añadir Manrope `300` y la itálica de Noto Serif (`style: ["normal","italic"]`) para soportar los headings light e itálicos. |
@@ -98,6 +98,7 @@ Formato de cada fila: **Severidad** · Stitch dice → Hoy hay · `archivo:líne
 | **Media** | Nombres de producto en serif `text-lg` (`font-headline`). | `ProductCard` usa `text-sm font-body` (sans, chico). | `src/components/product-card.tsx:28-30` | Cambiar título de card a serif (`font-heading`) y subir a `text-base/text-lg`. |
 | **Media** | **Sección de "trust indicators"** (ver detalle 3.1.1): íconos dentro de **círculo `w-16 h-16 rounded-full`** con fondo tonal de color, contenido **centrado**, heading serif `text-xl`, sección `bg-surface`. | Íconos **sin círculo de fondo**, contenido **alineado a la izquierda**, heading `text-base font-semibold` (sans), sección `bg-muted` (gris). | `page.tsx:44-75` | Ver sub-tabla 3.1.1. |
 | **Media** | Headings de sección serif `text-4xl md:text-5xl`. | `text-3xl font-semibold`. | `page.tsx:81,116` | Subir a `text-4xl/5xl` y peso light (ver G1). |
+| **Media** | **Sección "Cuidado en Estudio"** (ver detalle 3.1.2): jerarquía overline+H2 invertida, sin card, CTA gris en vez de marrón con ícono. | Heading/body intercambiados, contenido centrado sin card, CTA `bg-primary` deshabilitado. | `page.tsx:113-132` | Ver sub-tabla 3.1.2. |
 | **Baja** | Nav incluye "Galería" y "Citas". | Nav: Inicio, Tienda, Servicios, Nosotros, Contacto (sin "Galería"; usa "Servicios" en vez de "Citas"). | `src/components/header.tsx:5-11` | Añadir "Galería" si se implementa la sección; alinear naming Citas/Servicios. |
 
 #### 3.1.1 Detalle de la sección "trust indicators" (recuadro señalado por el equipo)
@@ -126,6 +127,34 @@ Markup de referencia Stitch (idéntico para los 3 items, cambia solo el color de
 | **Baja** ⚠️ | Set de íconos | Material Symbols: `local_shipping` (camión), `location_on`, `verified_user`. | lucide-react: `Package` (caja), `MapPin`, `ShieldCheck`. No hay equivalentes 1:1 (caja ≠ camión). | `page.tsx:49,54,59` | **Decisión requerida**: adoptar Material Symbols, o mapear a los lucide más cercanos (`Truck`/`MapPin`/`ShieldCheck`). No se resuelve de forma arbitraria. |
 
 > Todas estas diferencias son **frontend**; ninguna depende del backend, por lo que son replicables salvo la elección de la librería de íconos (⚠️), que se deja a decisión del equipo.
+
+#### 3.1.2 Detalle de la sección "Cuidado en Estudio" / Services banner
+
+Markup de referencia Stitch:
+
+```html
+<div class="... rounded-xl ... min-h-[500px] flex items-center p-12 md:p-24 bg-surface-container-highest">
+  <div class="relative z-10 max-w-xl">
+    <span class="text-secondary font-medium tracking-[0.2em] text-sm uppercase">Cuidado en Estudio</span>
+    <h2 class="text-4xl md:text-5xl font-serif text-on-surface">Diseño y recuperación experta</h2>
+    <p class="text-lg text-on-surface-variant font-light">Agenda una sesión personalizada…</p>
+    <button class="bg-secondary text-on-secondary px-8 py-4 rounded-full ... flex items-center gap-3">
+      Agendar Cita (Próximamente) <span class="material-symbols-outlined">calendar_today</span>
+    </button>
+  </div>
+</div>
+```
+
+| Sev | Aspecto | Stitch dice | Hoy hay | Archivo:línea | Recomendación |
+|---|---|---|---|---|---|
+| **Media** | Jerarquía de texto | Overline "Cuidado en Estudio" + **H2 "Diseño y recuperación experta"**. | "Cuidado en Estudio" es el **H2**; "Diseño y recuperación experta" quedó enterrado en el body. | `page.tsx:116-123` | Restaurar la jerarquía: overline + H2 correcto. |
+| **Media** | Eyebrow/overline | `<span text-secondary uppercase tracking-[0.2em] text-sm>`. | No existe. | `page.tsx:115-117` | Añadir el overline en `accent`/secondary. |
+| **Media** | Alineación + contenedor | Contenido **a la izquierda** (`max-w-xl`) dentro de **card** `rounded-xl p-12 md:p-24 bg-surface-container-highest`. | Centrado (`text-center max-w-xl mx-auto`), sin card; sección `bg-muted`. | `page.tsx:114-115` | Envolver en card a la izquierda (radio xl, G5). |
+| **Media** | CTA | **Marrón** `bg-secondary text-on-secondary px-8 py-4` (activo) + ícono `calendar_today`. | **Gris** `bg-primary opacity-50 cursor-not-allowed`, sin ícono. ⚠️ Estado deshabilitado puede ser intencional (booking no activo). | `page.tsx:124-130` | Aplicar estilo marrón + ícono. Decisión a confirmar: ¿activo o deshabilitado? |
+| **Baja** | Body | `text-lg font-light`. | `text-sm`. | `page.tsx:119-123` | Subir a `text-lg` peso light. |
+| **Baja** | H2 tamaño/peso | `text-4xl md:text-5xl font-serif`. | `text-3xl font-semibold`. | `page.tsx:116-118` | G1. |
+
+> Ejemplo concreto de **G4**: el color `secondary #705b44` se usa aquí dos veces (overline + botón) y el storefront no lo aplica. Todas las diferencias son frontend.
 
 ### 3.2 Tienda (`/productos` → `src/app/productos/page.tsx`)
 
