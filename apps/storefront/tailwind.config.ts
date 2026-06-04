@@ -20,6 +20,8 @@ export default {
         accent: {
           DEFAULT: "var(--accent)",
           foreground: "var(--accent-foreground)",
+          container: "var(--accent-container)",
+          "container-foreground": "var(--accent-container-foreground)",
         },
         destructive: {
           DEFAULT: "var(--destructive)",
@@ -28,12 +30,14 @@ export default {
         surface: {
           DEFAULT: "var(--surface)",
           lowest: "var(--surface-lowest)",
+          high: "var(--surface-high)",
         },
       },
       borderRadius: {
         sm: "var(--radius-sm)",
         md: "var(--radius-md)",
         lg: "var(--radius-lg)",
+        xl: "var(--radius-xl)",
         full: "var(--radius-full)",
       },
       fontFamily: {

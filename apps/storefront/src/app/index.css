@@ -7,20 +7,24 @@
     --background: #fbf9f5;
     --foreground: #30332e;
     --border: #b1b3ab;
-    --primary: #1a1a1a;
+    --primary: #5f5e5e;
     --primary-foreground: #faf7f6;
     --muted: #f5f4ef;
     --muted-foreground: #5d605a;
     --accent: #705b44;
     --accent-foreground: #fff7f3;
+    --accent-container: #fadec0;
+    --accent-container-foreground: #624e38;
     --destructive: #9e422c;
     --destructive-foreground: #fff7f6;
     --surface: #eeeee8;
     --surface-lowest: #ffffff;
+    --surface-high: #e2e3db;
 
     --radius-sm: 4px;
     --radius-md: 8px;
     --radius-lg: 8px;
+    --radius-xl: 12px;
     --radius-full: 9999px;
 
     --font-heading: "Noto Serif", serif;
