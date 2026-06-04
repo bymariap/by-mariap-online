@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { serverFetch, ApiError } from "@/lib/api/server";
@@ -8,6 +9,11 @@ import { productJsonLd } from "@/lib/seo";
 import { formatCop } from "@/lib/format";
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import { Badge } from "@/components/ui/badge";
+import { RelatedProducts } from "@/components/related-products";
+import {
+  ProductUsageSections,
+  ProductFaqSection,
+} from "@/components/product-detail-placeholders";
 import type { ProductDTO } from "@bymariap/types";
 
 export const revalidate = 60;
@@ -84,7 +90,7 @@ export default async function ProductDetail({ params }: Props) {
       </nav>
 
       {/* Main grid */}
-      <div className="grid md:grid-cols-2 gap-12">
+      <div className="grid md:grid-cols-2 gap-12 mb-20 md:mb-24">
         {/* Gallery */}
         <div className="space-y-3">
           <div className="aspect-square rounded-md overflow-hidden bg-muted">
@@ -136,7 +142,7 @@ export default async function ProductDetail({ params }: Props) {
             </div>
           )}
 
-          <h1 className="font-heading text-3xl md:text-4xl font-semibold text-foreground leading-tight">
+          <h1 className="t-display text-foreground leading-tight">
             {product.name}
           </h1>
 
@@ -145,7 +151,7 @@ export default async function ProductDetail({ params }: Props) {
           </p>
 
           {product.description && (
-            <p className="text-sm font-body text-muted-foreground leading-relaxed whitespace-pre-line">
+            <p className="text-sm font-body font-light text-muted-foreground leading-relaxed whitespace-pre-line">
               {product.description}
             </p>
           )}
@@ -164,6 +170,18 @@ export default async function ProductDetail({ params }: Props) {
             <AddToCartButton productId={product.id} />
           )}
         </div>
+      </div>
+
+      {/* Editorial sections */}
+      <div className="space-y-20 md:space-y-24">
+        <ProductUsageSections />
+        <Suspense fallback={null}>
+          <RelatedProducts
+            categorySlug={firstCategory?.slug}
+            excludeId={product.id}
+          />
+        </Suspense>
+        <ProductFaqSection />
       </div>
     </article>
   );
