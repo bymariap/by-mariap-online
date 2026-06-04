@@ -20,9 +20,7 @@ export function CategoryFilter({ categories }: { categories: CategoryDTO[] }) {
 
   return (
     <nav className="space-y-1">
-      <p className="text-xs font-body font-medium uppercase tracking-wide text-muted-foreground mb-3">
-        Categorías
-      </p>
+      <p className="font-heading text-lg text-foreground mb-3">Categorías</p>
       <Link
         href={hrefFor(null)}
         className={cn(
