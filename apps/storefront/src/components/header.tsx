@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { User } from "lucide-react";
+import Person from "@material-symbols/svg-300/outlined/person.svg?react";
 import { CartIconButton } from "./cart-icon-button";
 
 const navLinks = [
@@ -49,7 +49,7 @@ export function Header() {
             aria-label="Mi cuenta"
             className="p-1 text-foreground hover:text-muted-foreground transition-colors"
           >
-            <User className="h-5 w-5" strokeWidth={1.5} />
+            <Person className="h-5 w-5" />
           </Link>
           <CartIconButton />
         </div>
