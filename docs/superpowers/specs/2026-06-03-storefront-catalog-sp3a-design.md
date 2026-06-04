@@ -67,7 +67,7 @@ Archivo: `apps/storefront/src/components/product-card.tsx` (reestructura) + nuev
 - **`QuickAddButton`** (nuevo, `"use client"`):
   - Props: `productId: string`, `className?: string`.
   - Usa `useAddToCart()`; al click: `e.preventDefault()` + `e.stopPropagation()`, `mutate({ productId, quantity: 1 })` con `toast.success("Agregado al carrito")` / `toast.error(...)`. `disabled` mientras `isPending`.
-  - Estilo: `bg-surface-lowest shadow-md py-2.5 rounded-full text-xs font-body font-medium uppercase tracking-widest text-foreground hover:bg-muted transition-colors` + el `className` recibido. (Fondo sólido a propósito: ver nota de tokens §6.)
+  - Estilo (fiel a Stitch; la opacidad de tokens ya funciona tras SP1.1): `bg-surface/90 backdrop-blur py-2.5 rounded-full text-xs font-body font-medium uppercase tracking-widest text-foreground hover:bg-surface transition-colors` + el `className` recibido.
   - Texto: "Añadir" (o "Agregando…" mientras `isPending`).
 
 ### D. Transversal
@@ -88,11 +88,9 @@ Archivo: `apps/storefront/src/components/product-card.tsx` (reestructura) + nuev
   - Hover sobre una card muestra "Añadir"; al click agrega al carrito (badge del header sube, toast de éxito). Cards sin stock no muestran el botón.
 - Sin tests automatizados nuevos (cambios visuales/UX simples sobre hooks existentes).
 
-## 6. Nota de tokens (modificador de opacidad)
+## 6. Nota de tokens (modificador de opacidad) — RESUELTO por SP1.1
 
-Los colores en `tailwind.config.ts` se definen como `var(--x)` con valores **hex**. En Tailwind 3 el modificador de opacidad (`bg-x/90`, `bg-x/10`) **no aplica alpha** con ese formato (requiere canales `R G B` + `rgb(var(--x) / <alpha-value>)`). Por eso en código nuevo se usan **fondos sólidos** (aquí `bg-surface-lowest`).
-
-> **Riesgo heredado a verificar (fuera de SP3a):** SP1 dejó `bg-destructive/10` en `OrderStatusPill`/`AppointmentStatusPill` (estados "Cancelado"/"No asistió"). Si la opacidad no aplica, esos pills quedarían en rojo sólido con texto rojo (ilegible). Conviene verificar y, si aplica, corregir como tarea aparte (p.ej. añadir tokens de tinte sólidos o migrar el formato de tokens a canales con `<alpha-value>`).
+Originalmente los tokens estaban como `var(--hex)`, formato con el que Tailwind 3 descartaba `/opacidad`. **[SP1.1](./2026-06-03-storefront-tokens-rgb-channels-sp1-1-design.md) migró los tokens a canales RGB + `rgb(var(--x) / <alpha-value>)`**, así que `bg-x/NN` ya funciona en todo el sistema (verificado por compilación). Por eso SP3a puede usar el quick-add translúcido `bg-surface/90` fiel a Stitch, y los pills `bg-destructive/10` quedan corregidos.
 
 ## 7. Criterio de "hecho" (SP3a)
 - Sidebar con Categorías (serif) + Objetivo + Precio (placeholders inertes con `TODO(backend)`).
