@@ -29,7 +29,7 @@ export default function OrdersPage() {
   if (orders.data.length === 0) {
     return (
       <div className="space-y-6 py-8 text-center max-w-sm">
-        <h1 className="font-heading text-2xl font-semibold text-foreground">
+        <h1 className="t-display text-foreground">
           Mis pedidos
         </h1>
         <p className="text-sm font-body text-muted-foreground">
@@ -47,14 +47,14 @@ export default function OrdersPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-heading text-2xl font-semibold text-foreground">
+      <h1 className="t-display text-foreground">
         Mis pedidos
       </h1>
       <ul className="space-y-3">
         {orders.data.map((o) => (
           <li
             key={o.id}
-            className="bg-white rounded-md p-4 flex flex-col sm:flex-row sm:items-center gap-3"
+            className="bg-white rounded-xl p-4 flex flex-col sm:flex-row sm:items-center gap-3"
             style={{ boxShadow: "0 20px 40px rgba(48,51,46,0.05)" }}
           >
             <div className="flex-1">
