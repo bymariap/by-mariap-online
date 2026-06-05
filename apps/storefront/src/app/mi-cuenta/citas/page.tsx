@@ -55,7 +55,7 @@ export default function MisCitasPage() {
   if (appointments.length === 0) {
     return (
       <div className="py-8 space-y-4 text-center max-w-sm">
-        <h1 className="font-heading text-2xl font-semibold text-foreground">Mis citas</h1>
+        <h1 className="t-display text-foreground">Mis citas</h1>
         <p className="text-sm font-body text-muted-foreground">No tienes citas agendadas.</p>
       </div>
     );
@@ -63,13 +63,13 @@ export default function MisCitasPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="font-heading text-2xl font-semibold text-foreground">Mis citas</h1>
+      <h1 className="t-display text-foreground">Mis citas</h1>
       <ul className="space-y-3">
         {appointments.map((a: AppointmentDTO) => {
           const hoursUntil = (new Date(a.scheduledAt).getTime() - Date.now()) / 3_600_000;
           const canCancel = a.status === 'scheduled' && hoursUntil > 24;
           return (
-            <li key={a.id} className="bg-white rounded-md p-4 flex flex-col sm:flex-row sm:items-center gap-3" style={{ boxShadow: '0 20px 40px rgba(48,51,46,0.05)' }}>
+            <li key={a.id} className="bg-white rounded-xl p-4 flex flex-col sm:flex-row sm:items-center gap-3" style={{ boxShadow: '0 20px 40px rgba(48,51,46,0.05)' }}>
               <div className="flex-1">
                 <p className="text-sm font-body font-medium text-foreground">{a.serviceName}</p>
                 <p className="text-xs font-body text-muted-foreground">{formatLocal(a.scheduledAt)} · {a.specialistName}</p>
