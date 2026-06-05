@@ -123,9 +123,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="container py-10">
-      <h1 className="font-heading text-3xl font-semibold text-foreground mb-8">
-        Finalizar Compra
-      </h1>
+      <h1 className="t-display text-foreground mb-8">Finalizar Compra</h1>
 
       <div className="flex flex-col lg:flex-row gap-10 items-start">
         {/* ── Form ── */}
@@ -135,12 +133,7 @@ export default function CheckoutPage() {
         >
           {/* Section 1 — Identificación y entrega */}
           <section className="space-y-5">
-            <h2 className="font-heading text-lg font-semibold text-foreground flex items-center gap-2">
-              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-body">
-                1
-              </span>
-              Identificación y Entrega
-            </h2>
+            <h2 className="t-section text-foreground">Identificación y Entrega</h2>
 
             {!me.data && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -223,12 +216,7 @@ export default function CheckoutPage() {
 
           {/* Section 2 — Método de envío */}
           <section className="space-y-4">
-            <h2 className="font-heading text-lg font-semibold text-foreground flex items-center gap-2">
-              <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-body">
-                2
-              </span>
-              Método de Envío
-            </h2>
+            <h2 className="t-section text-foreground">Método de Envío</h2>
             {shippingOptions.isLoading && (
               <p className="text-sm font-body text-muted-foreground">
                 Cargando opciones…
@@ -269,7 +257,7 @@ export default function CheckoutPage() {
             type="submit"
             disabled={form.formState.isSubmitting}
             aria-busy={form.formState.isSubmitting}
-            className="w-full h-12 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="w-full h-12 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium uppercase tracking-widest hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {form.formState.isSubmitting ? "Procesando…" : "Pagar con Wompi"}
           </button>
@@ -278,12 +266,10 @@ export default function CheckoutPage() {
         {/* ── Order summary ── */}
         <aside className="w-full lg:w-80 shrink-0 lg:sticky lg:top-24">
           <div
-            className="bg-white rounded-md p-6 space-y-4"
+            className="bg-white rounded-xl p-6 space-y-4"
             style={{ boxShadow: "0 20px 40px rgba(48,51,46,0.05)" }}
           >
-            <h2 className="font-heading text-lg font-semibold text-foreground">
-              Resumen de Orden
-            </h2>
+            <h2 className="t-section text-foreground">Resumen de Orden</h2>
             {cart.data.items.map((item) => (
               <div key={item.id} className="flex items-center gap-3">
                 <div className="h-12 w-12 rounded-sm overflow-hidden bg-muted shrink-0">
