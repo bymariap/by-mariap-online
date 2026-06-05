@@ -32,11 +32,11 @@ export default async function ServiceDetailPage({ params }: Props) {
     <div className="container py-12">
       <div className="grid md:grid-cols-2 gap-12">
         <section className="space-y-4">
-          <h1 className="font-heading text-4xl font-semibold text-foreground">{service.name}</h1>
+          <h1 className="t-display text-foreground">{service.name}</h1>
           <p className="font-heading text-2xl text-foreground">{formatCop(service.priceCop)}</p>
-          <p className="text-sm font-body text-muted-foreground">{service.durationMinutes} minutos</p>
+          <p className="text-sm font-body font-light text-muted-foreground">{service.durationMinutes} minutos</p>
           {service.description && (
-            <p className="text-sm font-body text-muted-foreground whitespace-pre-line">{service.description}</p>
+            <p className="text-sm font-body font-light text-muted-foreground whitespace-pre-line">{service.description}</p>
           )}
         </section>
         <section>
