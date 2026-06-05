@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Trash2, ShieldCheck } from "lucide-react";
+import Delete from "@material-symbols/svg-300/outlined/delete.svg?react";
+import VerifiedUser from "@material-symbols/svg-300/outlined/verified_user.svg?react";
 import {
   useCart,
   useRemoveCartItem,
@@ -10,6 +11,7 @@ import {
 } from "@/lib/cart/hooks";
 import { QuantityInput } from "@/components/quantity-input";
 import { Separator } from "@/components/ui/separator";
+import { EmptyCartSuggestions } from "@/components/empty-cart-suggestions";
 import { formatCop } from "@/lib/format";
 
 export default function CartPage() {
@@ -29,28 +31,27 @@ export default function CartPage() {
 
   if (!cart.data || cart.data.items.length === 0) {
     return (
-      <div className="container py-32 max-w-md mx-auto text-center space-y-6">
-        <h1 className="font-heading text-3xl font-semibold text-foreground">
-          Tu carrito está vacío
-        </h1>
-        <p className="text-sm font-body text-muted-foreground leading-relaxed">
-          Descubre nuestra colección de productos para el cuidado de tus cejas.
-        </p>
-        <Link
-          href="/productos"
-          className="inline-flex h-12 px-8 items-center justify-center rounded-full bg-primary text-primary-foreground font-body text-sm font-medium hover:opacity-90 transition-opacity"
-        >
-          Ver productos
-        </Link>
+      <div className="container py-24 space-y-16">
+        <div className="max-w-md mx-auto text-center space-y-6">
+          <h1 className="t-display text-foreground">Tu carrito está vacío</h1>
+          <p className="text-sm font-body text-muted-foreground leading-relaxed">
+            Descubre nuestra colección de productos para el cuidado de tus cejas.
+          </p>
+          <Link
+            href="/productos"
+            className="inline-flex h-12 px-8 items-center justify-center rounded-full bg-primary text-primary-foreground font-body text-sm font-medium hover:opacity-90 transition-opacity"
+          >
+            Ver productos
+          </Link>
+        </div>
+        <EmptyCartSuggestions />
       </div>
     );
   }
 
   return (
     <div className="container py-10">
-      <h1 className="font-heading text-3xl font-semibold text-foreground mb-8">
-        Tu carrito
-      </h1>
+      <h1 className="t-display text-foreground mb-8">Tu carrito</h1>
 
       <div className="flex flex-col lg:flex-row gap-10 items-start">
         {/* ── Product list ── */}
@@ -104,7 +105,7 @@ export default function CartPage() {
                   className="p-1.5 text-muted-foreground hover:text-destructive transition-colors shrink-0"
                   aria-label={`Eliminar ${item.productName}`}
                 >
-                  <Trash2 className="h-4 w-4" strokeWidth={1.5} />
+                  <Delete className="h-4 w-4" />
                 </button>
               </div>
             </div>
@@ -114,12 +115,10 @@ export default function CartPage() {
         {/* ── Summary card ── */}
         <aside className="w-full lg:w-80 shrink-0 lg:sticky lg:top-24">
           <div
-            className="bg-white rounded-md p-6 space-y-4"
+            className="bg-white rounded-xl p-6 space-y-4"
             style={{ boxShadow: "0 20px 40px rgba(48,51,46,0.05)" }}
           >
-            <h2 className="font-heading text-lg font-semibold text-foreground">
-              Resumen
-            </h2>
+            <h2 className="t-section text-foreground">Resumen</h2>
 
             <div className="flex justify-between text-sm font-body">
               <span className="text-muted-foreground">Subtotal</span>
@@ -161,14 +160,8 @@ export default function CartPage() {
             </div>
 
             {/* Envío seguro note */}
-            <div
-              className="flex items-start gap-2.5 rounded-md p-3"
-              style={{ background: "#fadec0" }}
-            >
-              <ShieldCheck
-                className="h-4 w-4 shrink-0 text-foreground mt-0.5"
-                strokeWidth={1.5}
-              />
+            <div className="flex items-start gap-2.5 rounded-md p-3 bg-accent-container">
+              <VerifiedUser className="h-4 w-4 shrink-0 text-foreground mt-0.5" />
               <div>
                 <p className="text-xs font-body font-medium text-foreground">
                   Envío Seguro & Premium
