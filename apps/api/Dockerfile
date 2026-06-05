@@ -30,7 +30,7 @@ COPY package.json pnpm-workspace.yaml ./
 
 # Generate Prisma client then build
 RUN pnpm --filter @bymariap/api prisma:generate
-RUN pnpm --from @bymariap/api build
+RUN pnpm --filter @bymariap/api build
 
 # ─── Stage 3: runtime ────────────────────────────────────────────────────────
 FROM node:22-alpine AS runtime
