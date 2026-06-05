@@ -58,8 +58,8 @@ export function BookingForm({ service }: { service: ServiceDTO }) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 bg-white rounded-md p-6" style={{ boxShadow: '0 20px 40px rgba(48,51,46,0.05)' }}>
-      <h2 className="font-heading text-xl font-semibold text-foreground">Agenda tu cita</h2>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 bg-white rounded-xl p-6" style={{ boxShadow: '0 20px 40px rgba(48,51,46,0.05)' }}>
+      <h2 className="t-section text-foreground">Agenda tu cita</h2>
 
       {/* Specialist selector */}
       <div className="space-y-2">
@@ -69,7 +69,7 @@ export function BookingForm({ service }: { service: ServiceDTO }) {
             {specialists.map((s) => (
               <label key={s.id} className="cursor-pointer">
                 <input type="radio" {...register('specialistId')} value={s.id} className="sr-only" />
-                <div className={`p-3 rounded-md border text-sm font-body transition-colors ${specialistId === s.id ? 'border-primary bg-primary/5 text-foreground' : 'border-border text-muted-foreground hover:border-foreground'}`}>
+                <div className={`p-3 rounded-md border text-sm font-body transition-colors ${specialistId === s.id ? 'border-accent bg-accent/10 text-foreground' : 'border-border text-muted-foreground hover:border-foreground'}`}>
                   <p className="font-medium text-foreground">{s.user.fullName}</p>
                   {s.specialties?.[0] && <p className="text-xs text-muted-foreground mt-0.5">{s.specialties[0]}</p>}
                 </div>
@@ -98,17 +98,17 @@ export function BookingForm({ service }: { service: ServiceDTO }) {
           <div>
             <label className="block text-sm font-body font-medium text-foreground mb-1">Nombre completo</label>
             <input {...register('guestFullName')} required minLength={2}
-              className="w-full h-11 px-3 rounded-md border border-border bg-background text-sm font-body text-foreground focus:outline-none focus:ring-1 focus:ring-primary" />
+              className="w-full h-11 px-3 rounded-md border border-border bg-background text-sm font-body text-foreground focus:outline-none focus:ring-1 focus:ring-accent" />
           </div>
           <div>
             <label className="block text-sm font-body font-medium text-foreground mb-1">Teléfono</label>
             <input {...register('guestPhone')} type="tel" required placeholder="+57 300 000 0000"
-              className="w-full h-11 px-3 rounded-md border border-border bg-background text-sm font-body text-foreground focus:outline-none focus:ring-1 focus:ring-primary" />
+              className="w-full h-11 px-3 rounded-md border border-border bg-background text-sm font-body text-foreground focus:outline-none focus:ring-1 focus:ring-accent" />
           </div>
           <div>
             <label className="block text-sm font-body font-medium text-foreground mb-1">Email</label>
             <input {...register('guestEmail')} type="email" required
-              className="w-full h-11 px-3 rounded-md border border-border bg-background text-sm font-body text-foreground focus:outline-none focus:ring-1 focus:ring-primary" />
+              className="w-full h-11 px-3 rounded-md border border-border bg-background text-sm font-body text-foreground focus:outline-none focus:ring-1 focus:ring-accent" />
           </div>
         </div>
       )}
@@ -116,11 +116,11 @@ export function BookingForm({ service }: { service: ServiceDTO }) {
       <div>
         <label className="block text-sm font-body font-medium text-foreground mb-1">Notas (opcional)</label>
         <textarea {...register('notes')} rows={3}
-          className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm font-body text-foreground focus:outline-none focus:ring-1 focus:ring-primary resize-none" />
+          className="w-full px-3 py-2 rounded-md border border-border bg-background text-sm font-body text-foreground focus:outline-none focus:ring-1 focus:ring-accent resize-none" />
       </div>
 
       <button type="submit" disabled={isSubmitting || !startAt}
-        className="w-full h-12 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50">
+        className="w-full h-12 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium uppercase tracking-widest hover:opacity-90 transition-opacity disabled:opacity-50">
         {isSubmitting ? 'Agendando…' : 'Confirmar cita'}
       </button>
       <p className="text-xs font-body text-muted-foreground text-center">El pago se realiza en sitio.</p>
