@@ -9,29 +9,54 @@ export default function ProfilePage() {
   if (me.isLoading || !me.data) return null;
 
   return (
-    <div className="space-y-8 max-w-lg">
-      <div>
-        <h1 className="font-heading text-2xl font-semibold text-foreground">
-          Información Personal
-        </h1>
-        <p className="text-sm font-body text-muted-foreground mt-1">
-          Gestiona tu información personal y preferencias para una experiencia
-          más personalizada en nuestro atelier.
-        </p>
-      </div>
+    <div className="space-y-10 max-w-lg">
+      <h1 className="t-display text-foreground">Mi Perfil</h1>
 
-      <div className="space-y-4">
-        <InfoRow label="Nombre" value={me.data.fullName} />
-        <InfoRow label="Correo electrónico" value={me.data.email} />
-        {me.data.phone && <InfoRow label="Teléfono" value={me.data.phone} />}
-      </div>
+      {/* Información Personal (datos reales) */}
+      <section className="space-y-4">
+        <div>
+          <h2 className="t-sub-italic text-foreground">Información Personal</h2>
+          <p className="text-sm font-body font-light text-muted-foreground mt-1">
+            Gestiona tu información personal y preferencias para una experiencia
+            más personalizada en nuestro atelier.
+          </p>
+        </div>
+        <div className="space-y-4">
+          <InfoRow label="Nombre" value={me.data.fullName} />
+          <InfoRow label="Correo electrónico" value={me.data.email} />
+          {me.data.phone && <InfoRow label="Teléfono" value={me.data.phone} />}
+        </div>
+        <button
+          disabled
+          className="h-12 px-8 rounded-full bg-primary text-primary-foreground font-body font-medium text-sm opacity-50 cursor-not-allowed"
+        >
+          Guardar cambios
+        </button>
+      </section>
 
-      <button
-        disabled
-        className="h-12 px-8 rounded-full bg-primary text-primary-foreground font-body font-medium text-sm opacity-50 cursor-not-allowed"
-      >
-        Guardar cambios
-      </button>
+      {/* Dirección de Envío (placeholder) */}
+      <section className="space-y-4">
+        <h2 className="t-sub-italic text-foreground">Dirección de Envío</h2>
+        {/* TODO(backend): dirección guardada del usuario */}
+        <div className="space-y-2">
+          <div className="bg-muted rounded h-4 w-3/4" />
+          <div className="bg-muted rounded h-4 w-1/2" />
+          <div className="bg-muted rounded h-4 w-2/3" />
+        </div>
+      </section>
+
+      {/* Seguridad (placeholder) */}
+      <section className="space-y-4">
+        <h2 className="t-sub-italic text-foreground">Seguridad</h2>
+        {/* TODO(backend): cambio de contraseña */}
+        <InfoRow label="Contraseña" value="••••••••" />
+        <button
+          disabled
+          className="h-11 px-6 rounded-full border border-border font-body text-sm text-foreground opacity-50 cursor-not-allowed"
+        >
+          Cambiar contraseña
+        </button>
+      </section>
     </div>
   );
 }
