@@ -2,8 +2,5 @@
   "framework": "vite",
   "installCommand": "corepack enable && pnpm install --frozen-lockfile",
   "buildCommand": "pnpm build",
-  "outputDirectory": "dist",
-  "env": {
-    "VITE_API_BASE_URL": "@admin-api-base-url"
-  }
+  "outputDirectory": "dist"
 }

@@ -1,11 +1,5 @@
 {
   "framework": "nextjs",
   "installCommand": "corepack enable && pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm --filter @bymariap/storefront build",
-  "env": {
-    "NEXT_PUBLIC_API_BASE_URL": "@storefront-api-base-url",
-    "NEXT_PUBLIC_SITE_URL": "@storefront-site-url",
-    "NEXT_PUBLIC_WOMPI_REDIRECT_BASE": "@storefront-wompi-redirect-base",
-    "API_INTERNAL_BASE_URL": "@storefront-api-internal-url"
-  }
+  "buildCommand": "pnpm --filter @bymariap/storefront build"
 }
