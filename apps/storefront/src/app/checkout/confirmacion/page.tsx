@@ -2,7 +2,8 @@
 
 import { Suspense } from "react";
 import Link from "next/link";
-import { CheckCircle, Clock } from "lucide-react";
+import CheckCircle from "@material-symbols/svg-300/outlined/check_circle.svg?react";
+import Schedule from "@material-symbols/svg-300/outlined/schedule.svg?react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api/client";
@@ -59,17 +60,11 @@ function ConfirmationContent() {
       {/* Header */}
       <div className="text-center space-y-3 mb-10">
         {isPending ? (
-          <Clock
-            className="h-14 w-14 mx-auto text-muted-foreground"
-            strokeWidth={1.5}
-          />
+          <Schedule className="h-14 w-14 mx-auto text-muted-foreground" />
         ) : (
-          <CheckCircle
-            className="h-14 w-14 mx-auto text-foreground"
-            strokeWidth={1.5}
-          />
+          <CheckCircle className="h-14 w-14 mx-auto text-foreground" />
         )}
-        <h1 className="font-heading text-3xl font-semibold text-foreground">
+        <h1 className="t-display text-foreground">
           {isSuccess
             ? "¡Gracias por tu compra!"
             : isPending
@@ -96,10 +91,10 @@ function ConfirmationContent() {
       <div className="grid md:grid-cols-2 gap-6 mb-8">
         {/* Order summary */}
         <div
-          className="bg-white rounded-md p-5 space-y-3"
+          className="bg-white rounded-xl p-5 space-y-3"
           style={{ boxShadow: "0 20px 40px rgba(48,51,46,0.05)" }}
         >
-          <h2 className="font-heading text-base font-semibold text-foreground">
+          <h2 className="font-heading text-lg text-foreground">
             Resumen de tu pedido
           </h2>
           {o.items.map((item) => (
@@ -134,10 +129,10 @@ function ConfirmationContent() {
 
         {/* Delivery address */}
         <div
-          className="bg-white rounded-md p-5 space-y-2"
+          className="bg-white rounded-xl p-5 space-y-2"
           style={{ boxShadow: "0 20px 40px rgba(48,51,46,0.05)" }}
         >
-          <h2 className="font-heading text-base font-semibold text-foreground">
+          <h2 className="font-heading text-lg text-foreground">
             Dirección de Entrega
           </h2>
           <p className="text-sm font-body text-foreground">
