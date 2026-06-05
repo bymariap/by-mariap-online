@@ -39,13 +39,11 @@ function LoginContent() {
   return (
     <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center px-4 bg-background">
       <div
-        className="w-full max-w-sm bg-white rounded-md p-8 space-y-6"
+        className="w-full max-w-md bg-white rounded-xl p-8 md:p-12 space-y-6"
         style={{ boxShadow: "0 20px 40px rgba(48,51,46,0.05)" }}
       >
         <div className="text-center space-y-1">
-          <h1 className="font-heading text-2xl font-semibold text-foreground">
-            Bienvenida de nuevo
-          </h1>
+          <h1 className="t-display text-foreground">Bienvenida de nuevo</h1>
           <p className="text-xs font-body text-muted-foreground">
             Inicia sesión para ver tus pedidos y gestionar tu cuenta
           </p>
@@ -83,7 +81,7 @@ function LoginContent() {
           <button
             type="submit"
             disabled={form.formState.isSubmitting}
-            className="w-full h-12 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+            className="w-full h-12 rounded-full bg-primary text-primary-foreground font-body text-sm font-medium uppercase tracking-widest hover:opacity-90 transition-opacity disabled:opacity-50"
           >
             {form.formState.isSubmitting ? "Entrando…" : "Iniciar sesión"}
           </button>
