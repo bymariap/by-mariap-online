@@ -27,7 +27,10 @@ export async function serverFetch<T>(
   const cookieStore = await cookies();
   const cookieHeader = cookieStore.toString();
 
-  const res = await fetch(`${BASE}${path}`, {
+  const url = `${BASE}${path}`;
+  console.log("[DEBUG serverFetch] requesting:", url);
+
+  const res = await fetch(url, {
     ...init,
     headers: {
       ...((init.headers as Record<string, string>) ?? {}),
@@ -36,7 +39,12 @@ export async function serverFetch<T>(
     cache:
       init.cache ??
       (init.next?.revalidate !== undefined ? undefined : "no-store"),
+  }).catch((e) => {
+    console.error("[DEBUG serverFetch] fetch threw:", url, e);
+    throw e;
   });
+
+  console.log("[DEBUG serverFetch] response:", url, res.status);
 
   if (!res.ok) {
     throw new ApiError(res.status, await safe(res), res.statusText);

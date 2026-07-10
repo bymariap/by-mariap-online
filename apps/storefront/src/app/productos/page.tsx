@@ -31,8 +31,8 @@ export default async function CatalogPage({ searchParams }: PageProps) {
         next: { revalidate: 300 },
       }),
     ]);
-  } catch {
-    // API unavailable at build time — render empty state
+  } catch (err) {
+    console.error("[DEBUG productos] fetch failed:", err);
   }
 
   const activeCategory = categories.find((c) => c.slug === categoria);
