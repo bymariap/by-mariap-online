@@ -10,8 +10,12 @@ async function bootstrap() {
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.useGlobalFilters(new AllExceptionsFilter());
+  const allowedOrigins = (process.env.ADMIN_ORIGIN ?? "http://localhost:5173")
+    .split(",")
+    .map((o) => o.trim().replace(/\/$/, ""))
+    .filter(Boolean);
   app.enableCors({
-    origin: (process.env.ADMIN_ORIGIN ?? "http://localhost:5173").split(","),
+    origin: allowedOrigins,
     credentials: true,
   });
   await app.listen(Number(process.env.PORT ?? 3001));

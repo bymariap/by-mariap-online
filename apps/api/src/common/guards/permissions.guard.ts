@@ -3,12 +3,18 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { REQUIRED_PERMISSIONS_KEY } from '../decorators/require-permissions.decorator';
+import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(ctx: ExecutionContext): boolean {
+    const isPublic = this.reflector.getAllAndOverride<boolean>(
+      IS_PUBLIC_KEY, [ctx.getHandler(), ctx.getClass()],
+    );
+    if (isPublic) return true;
+
     const required = this.reflector.getAllAndOverride<string[] | undefined>(
       REQUIRED_PERMISSIONS_KEY, [ctx.getHandler(), ctx.getClass()],
     );
