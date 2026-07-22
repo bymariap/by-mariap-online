@@ -36,7 +36,7 @@ export function LoginPage() {
         onSubmit={form.handleSubmit(onSubmit)}
         className="bg-background p-8 rounded-lg shadow w-full max-w-sm space-y-4"
       >
-        <h1 className="text-xl font-semibold">by mariap — admin</h1>
+        <h1 className="text-xl font-semibold">By MariaP — Admin</h1>
         <div className="space-y-1">
           <Label htmlFor="email">Email</Label>
           <Input id="email" type="email" {...form.register("email")} />

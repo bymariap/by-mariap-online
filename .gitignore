@@ -11,3 +11,13 @@ postgres_data
 # Next.js
 .next/
 out/
+
+.vercel
+.env*
+
+# TypeScript incremental build cache
+*.tsbuildinfo
+
+# Claude Code / Superpowers scratch state
+.claude/
+.superpowers/
