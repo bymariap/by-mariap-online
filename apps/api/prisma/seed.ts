@@ -14,6 +14,8 @@ const PERMISSIONS: string[] = [
   // products (defined for later phases, seeded now so role mapping is stable)
   "products:read",
   "products:write",
+  // media
+  "media:write",
   // orders
   "orders:read",
   "orders:read:own",
