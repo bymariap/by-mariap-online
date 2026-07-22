@@ -56,7 +56,7 @@ apps/admin/
 **Files:**
 - Modify: `apps/api/prisma/seed.ts`
 
-- [ ] **Step 1: Add the permission to the permissions array**
+- [x] **Step 1: Add the permission to the permissions array**
 
 In `apps/api/prisma/seed.ts`, find the `// availability` block (currently lines ~39-41):
 
@@ -77,12 +77,12 @@ Replace it with:
 
 Do NOT add `availability:write` to the `specialist` role array — only `admin` (which has `*`) should use it.
 
-- [ ] **Step 2: Run the seed**
+- [x] **Step 2: Run the seed**
 
 Run: `pnpm --filter @bymariap/api prisma:seed`
 Expected: completes without error; the new permission row is upserted.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add apps/api/prisma/seed.ts
@@ -98,7 +98,7 @@ git commit -m "feat(api): add availability:write permission for admin agenda man
 - Modify: `apps/api/src/modules/availability/availability.service.ts`
 - Modify: `apps/api/src/modules/availability/availability.service.spec.ts`
 
-- [ ] **Step 1: Write the admin DTO**
+- [x] **Step 1: Write the admin DTO**
 
 Create `apps/api/src/modules/availability/dto/admin-publish-availability.dto.ts`:
 
@@ -113,7 +113,7 @@ export class AdminPublishAvailabilityDto {
 }
 ```
 
-- [ ] **Step 2: Write the failing test for `removeAny`**
+- [x] **Step 2: Write the failing test for `removeAny`**
 
 In `apps/api/src/modules/availability/availability.service.spec.ts`, add this describe block at the end of the file:
 
@@ -137,12 +137,12 @@ describe('AvailabilityService.removeAny', () => {
 });
 ```
 
-- [ ] **Step 3: Run the test to verify it fails**
+- [x] **Step 3: Run the test to verify it fails**
 
 Run: `pnpm --filter @bymariap/api test availability.service`
 Expected: FAIL — `svc.removeAny is not a function`.
 
-- [ ] **Step 4: Implement `removeAny`**
+- [x] **Step 4: Implement `removeAny`**
 
 In `apps/api/src/modules/availability/availability.service.ts`, add this method to the class, right after the existing `remove` method:
 
@@ -154,12 +154,12 @@ async removeAny(id: string) {
 }
 ```
 
-- [ ] **Step 5: Run the test to verify it passes**
+- [x] **Step 5: Run the test to verify it passes**
 
 Run: `pnpm --filter @bymariap/api test availability.service`
 Expected: PASS (all availability.service tests green).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add apps/api/src/modules/availability
@@ -173,7 +173,7 @@ git commit -m "feat(api): AvailabilityService.removeAny + admin publish DTO"
 **Files:**
 - Modify: `apps/api/src/modules/availability/availability.controller.ts`
 
-- [ ] **Step 1: Add the import for the admin DTO**
+- [x] **Step 1: Add the import for the admin DTO**
 
 In `apps/api/src/modules/availability/availability.controller.ts`, add to the imports at the top:
 
@@ -181,7 +181,7 @@ In `apps/api/src/modules/availability/availability.controller.ts`, add to the im
 import { AdminPublishAvailabilityDto } from './dto/admin-publish-availability.dto';
 ```
 
-- [ ] **Step 2: Add the admin write routes**
+- [x] **Step 2: Add the admin write routes**
 
 In the same file, replace the existing `listAny` method (the `@Get('admin/availability')` block) with these three methods:
 
@@ -215,12 +215,12 @@ In the same file, replace the existing `listAny` method (the `@Get('admin/availa
 
 (`Post`, `Delete`, `Param`, `Body` are already imported in this file from Task-5/earlier work — verify the import line `import { BadRequestException, Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';` includes all of them; add any missing.)
 
-- [ ] **Step 3: Build**
+- [x] **Step 3: Build**
 
 Run: `pnpm --filter @bymariap/api build`
 Expected: builds with no TypeScript errors.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add apps/api/src/modules/availability
@@ -235,7 +235,7 @@ git commit -m "feat(api): admin availability write routes (publish/delete any sp
 - Modify: `apps/api/src/modules/appointments/appointments.service.ts`
 - Modify: `apps/api/src/modules/appointments/appointments.service.spec.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 In `apps/api/src/modules/appointments/appointments.service.spec.ts`, add this describe block at the end:
 
@@ -270,12 +270,12 @@ describe('AppointmentsService.listAdmin range filter', () => {
 });
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `pnpm --filter @bymariap/api test appointments.service`
 Expected: FAIL — `listAdmin` ignores extra args, so `where.scheduledAt` is undefined.
 
-- [ ] **Step 3: Implement the range filter**
+- [x] **Step 3: Implement the range filter**
 
 In `apps/api/src/modules/appointments/appointments.service.ts`, replace the existing `listAdmin` method:
 
@@ -298,12 +298,12 @@ async listAdmin(status?: AppointmentStatus, fromIso?: string, toIso?: string) {
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `pnpm --filter @bymariap/api test appointments.service`
 Expected: PASS (all appointments.service tests green).
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/api/src/modules/appointments
@@ -317,7 +317,7 @@ git commit -m "feat(api): appointments listAdmin supports scheduledAt range filt
 **Files:**
 - Modify: `apps/api/src/modules/appointments/appointments.controller.ts`
 
-- [ ] **Step 1: Update the admin list route**
+- [x] **Step 1: Update the admin list route**
 
 In `apps/api/src/modules/appointments/appointments.controller.ts`, replace the existing `list` method (`@Get('admin/appointments')`):
 
@@ -333,12 +333,12 @@ In `apps/api/src/modules/appointments/appointments.controller.ts`, replace the e
   }
 ```
 
-- [ ] **Step 2: Build**
+- [x] **Step 2: Build**
 
 Run: `pnpm --filter @bymariap/api build`
 Expected: builds with no TypeScript errors.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add apps/api/src/modules/appointments
@@ -353,7 +353,7 @@ git commit -m "feat(api): GET /admin/appointments accepts from/to range params"
 - Modify: `apps/admin/package.json`
 - Create: `apps/admin/vitest.config.ts`
 
-- [ ] **Step 1: Install dependencies**
+- [x] **Step 1: Install dependencies**
 
 Run:
 ```bash
@@ -361,7 +361,7 @@ pnpm --filter @bymariap/admin add date-fns date-fns-tz
 pnpm --filter @bymariap/admin add -D vitest
 ```
 
-- [ ] **Step 2: Add the test script**
+- [x] **Step 2: Add the test script**
 
 In `apps/admin/package.json`, inside `"scripts"`, add:
 
@@ -369,7 +369,7 @@ In `apps/admin/package.json`, inside `"scripts"`, add:
     "test": "vitest run",
 ```
 
-- [ ] **Step 3: Create `apps/admin/vitest.config.ts`**
+- [x] **Step 3: Create `apps/admin/vitest.config.ts`**
 
 ```ts
 import { defineConfig } from 'vitest/config';
@@ -386,12 +386,12 @@ export default defineConfig({
 });
 ```
 
-- [ ] **Step 4: Verify the runner works (no tests yet)**
+- [x] **Step 4: Verify the runner works (no tests yet)**
 
 Run: `pnpm --filter @bymariap/admin test`
 Expected: Vitest runs and reports "No test files found" (exit 0) or passes with 0 tests. This confirms the runner is wired.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/admin/package.json apps/admin/vitest.config.ts pnpm-lock.yaml
@@ -406,7 +406,7 @@ git commit -m "chore(admin): add date-fns, date-fns-tz and vitest"
 - Create: `apps/admin/src/components/calendar/calendar-utils.ts`
 - Create: `apps/admin/src/components/calendar/calendar-utils.test.ts`
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Create `apps/admin/src/components/calendar/calendar-utils.test.ts`:
 
@@ -497,12 +497,12 @@ describe('localHHmm', () => {
 });
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [x] **Step 2: Run the test to verify it fails**
 
 Run: `pnpm --filter @bymariap/admin test`
 Expected: FAIL — module `./calendar-utils` not found.
 
-- [ ] **Step 3: Implement `calendar-utils.ts`**
+- [x] **Step 3: Implement `calendar-utils.ts`**
 
 Create `apps/admin/src/components/calendar/calendar-utils.ts`:
 
@@ -578,12 +578,12 @@ export function localHHmm(utcIso: string): string {
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [x] **Step 4: Run the test to verify it passes**
 
 Run: `pnpm --filter @bymariap/admin test`
 Expected: PASS — all calendar-utils tests green.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add apps/admin/src/components/calendar/calendar-utils.ts apps/admin/src/components/calendar/calendar-utils.test.ts
@@ -602,7 +602,7 @@ git commit -m "feat(admin): pure calendar date helpers (Bogota tz) with tests"
 
 The calendar is presentation-only. It receives `blocks` and emits selection callbacks. Hours are shown 06:00–21:00 (a salon-friendly window).
 
-- [ ] **Step 1: Define shared types and the day-view**
+- [x] **Step 1: Define shared types and the day-view**
 
 Create `apps/admin/src/components/calendar/day-view.tsx`:
 
@@ -701,7 +701,7 @@ export function DayView({ date, blocks, columns, onSelectDate, onSelectBlock }: 
 }
 ```
 
-- [ ] **Step 2: Create the week-view**
+- [x] **Step 2: Create the week-view**
 
 Create `apps/admin/src/components/calendar/week-view.tsx`:
 
@@ -783,7 +783,7 @@ export function WeekView({ date, blocks, onSelectDate, onSelectBlock }: WeekView
 }
 ```
 
-- [ ] **Step 3: Create the month-view**
+- [x] **Step 3: Create the month-view**
 
 Create `apps/admin/src/components/calendar/month-view.tsx`:
 
@@ -836,7 +836,7 @@ export function MonthView({ date, blocks, onSelectDate }: MonthViewProps) {
 }
 ```
 
-- [ ] **Step 4: Create the `Calendar` container**
+- [x] **Step 4: Create the `Calendar` container**
 
 Create `apps/admin/src/components/calendar/calendar.tsx`:
 
@@ -911,12 +911,12 @@ export function Calendar({
 }
 ```
 
-- [ ] **Step 5: Typecheck**
+- [x] **Step 5: Typecheck**
 
 Run: `pnpm --filter @bymariap/admin typecheck`
 Expected: no TypeScript errors.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add apps/admin/src/components/calendar
@@ -933,7 +933,7 @@ git commit -m "feat(admin): presentation-only Calendar component (month/week/day
 - Modify: `apps/admin/src/features/availability/availability-window-dialog.tsx`
 - Modify: `apps/admin/src/components/app-shell.tsx`
 
-- [ ] **Step 1: Extend the availability API client**
+- [x] **Step 1: Extend the availability API client**
 
 Replace `apps/admin/src/features/availability/api.ts` with:
 
@@ -960,7 +960,7 @@ export const availabilityApi = {
 };
 ```
 
-- [ ] **Step 2: Update the publish dialog to accept context**
+- [x] **Step 2: Update the publish dialog to accept context**
 
 Replace `apps/admin/src/features/availability/availability-window-dialog.tsx` with:
 
@@ -1045,7 +1045,7 @@ export function AvailabilityWindowDialog({ open, onOpenChange, specialistId, pre
 
 > Note: the dialog is remounted with a fresh `key` from the page each time it opens, so `useState(prefill)` initializers pick up new prefill values (see Step 3).
 
-- [ ] **Step 3: Rewrite the availability page**
+- [x] **Step 3: Rewrite the availability page**
 
 Replace `apps/admin/src/features/availability/availability-page.tsx` with:
 
@@ -1195,7 +1195,7 @@ export function AvailabilityPage() {
 }
 ```
 
-- [ ] **Step 4: Update nav visibility in `app-shell.tsx`**
+- [x] **Step 4: Update nav visibility in `app-shell.tsx`**
 
 In `apps/admin/src/components/app-shell.tsx`, find the `"/mi-agenda"` nav entry:
 
@@ -1209,12 +1209,12 @@ Replace its `visible` predicate so admins (even without a profile) can manage ag
   { to: "/mi-agenda", label: "Mi agenda", visible: (u) => isAdmin(u) || hasSpecialistProfile(u) },
 ```
 
-- [ ] **Step 5: Typecheck + build**
+- [x] **Step 5: Typecheck + build**
 
 Run: `pnpm --filter @bymariap/admin typecheck && pnpm --filter @bymariap/admin build`
 Expected: no errors; build succeeds.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add apps/admin/src/features/availability apps/admin/src/components/app-shell.tsx
@@ -1229,7 +1229,7 @@ git commit -m "feat(admin): calendar-based Mi agenda with admin specialist selec
 - Modify: `apps/admin/src/features/appointments/api.ts`
 - Modify: `apps/admin/src/features/appointments/appointments-page.tsx`
 
-- [ ] **Step 1: Extend the appointments API client**
+- [x] **Step 1: Extend the appointments API client**
 
 Replace `apps/admin/src/features/appointments/api.ts` with:
 
@@ -1251,7 +1251,7 @@ export const appointmentsApi = {
 };
 ```
 
-- [ ] **Step 2: Rewrite the appointments page**
+- [x] **Step 2: Rewrite the appointments page**
 
 Replace `apps/admin/src/features/appointments/appointments-page.tsx` with:
 
@@ -1433,16 +1433,16 @@ export function AppointmentsPage() {
 }
 ```
 
-- [ ] **Step 2 (cont.): Note on the popover**
+- [x] **Step 2 (cont.): Note on the popover**
 
 The detail uses a simple modal overlay (not the `Dialog` element) so it can show over the calendar with action buttons. This is intentional and self-contained.
 
-- [ ] **Step 3: Typecheck + build**
+- [x] **Step 3: Typecheck + build**
 
 Run: `pnpm --filter @bymariap/admin typecheck && pnpm --filter @bymariap/admin build`
 Expected: no errors; build succeeds.
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add apps/admin/src/features/appointments
@@ -1453,7 +1453,7 @@ git commit -m "feat(admin): calendar-based Citas with per-specialist columns + l
 
 ## Task 11: Final verification
 
-- [ ] **Step 1: Backend tests + build**
+- [x] **Step 1: Backend tests + build**
 
 Run:
 ```bash
@@ -1462,7 +1462,7 @@ pnpm --filter @bymariap/api build
 ```
 Expected: all tests green; build succeeds.
 
-- [ ] **Step 2: Admin tests + typecheck + build**
+- [x] **Step 2: Admin tests + typecheck + build**
 
 Run:
 ```bash
