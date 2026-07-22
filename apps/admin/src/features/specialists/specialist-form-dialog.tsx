@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -10,6 +10,7 @@ import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { ImageUpload } from "@/components/image-upload";
 
 interface FormValues {
   userId: string;
@@ -36,6 +37,7 @@ export function SpecialistFormDialog({
   const form = useForm<FormValues>({
     defaultValues: { userId: "", bio: "", specialties: "", avatarUrl: "" },
   });
+  const [uploading, setUploading] = useState(false);
 
   const users = useQuery({
     queryKey: ["users"],
@@ -131,10 +133,16 @@ export function SpecialistFormDialog({
           <Input {...form.register("specialties")} />
         </div>
         <div className="space-y-1">
-          <Label>Avatar URL</Label>
-          <Input {...form.register("avatarUrl")} />
+          <Label>Avatar</Label>
+          <ImageUpload
+            value={form.watch("avatarUrl") ? [form.watch("avatarUrl")] : []}
+            onChange={(urls) => form.setValue("avatarUrl", urls[0] ?? "")}
+            folder="avatars"
+            max={1}
+            onUploadingChange={setUploading}
+          />
         </div>
-        <Button type="submit" disabled={save.isPending}>
+        <Button type="submit" disabled={save.isPending || uploading}>
           Guardar
         </Button>
       </form>
