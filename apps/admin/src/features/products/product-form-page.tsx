@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useNavigate, useParams } from "react-router-dom";
@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select } from "@/components/ui/select";
+import { ImageUpload } from "@/components/image-upload";
 
 const schema = z.object({
   name: z.string().min(2).max(120),
@@ -19,7 +20,7 @@ const schema = z.object({
   description: z.string().max(5000).optional(),
   priceCop: z.coerce.number().int().min(0),
   stockQuantity: z.coerce.number().int().min(0),
-  imageUrls: z.array(z.object({ value: z.string().url() })).max(10),
+  imageUrls: z.array(z.string().url()).max(10),
   categoryIds: z.array(z.string()).default([]),
   status: z.enum(["draft", "published", "archived"]),
 });
@@ -54,7 +55,7 @@ export function ProductFormPage() {
       status: "draft",
     },
   });
-  const imgs = useFieldArray({ control: form.control, name: "imageUrls" });
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (prod.data) {
@@ -64,7 +65,7 @@ export function ProductFormPage() {
         description: prod.data.description ?? "",
         priceCop: prod.data.priceCop,
         stockQuantity: prod.data.stockQuantity,
-        imageUrls: prod.data.imageUrls.map((value) => ({ value })),
+        imageUrls: prod.data.imageUrls,
         categoryIds: prod.data.categories.map((c) => c.id),
         status: prod.data.status,
       });
@@ -73,10 +74,7 @@ export function ProductFormPage() {
 
   const save = useMutation({
     mutationFn: (values: FormValues) => {
-      const payload = {
-        ...values,
-        imageUrls: values.imageUrls.map((v) => v.value),
-      };
+      const payload = { ...values };
       return isEdit
         ? productsApi.update(id!, payload)
         : productsApi.create(payload);
@@ -156,36 +154,23 @@ export function ProductFormPage() {
         </div>
       </Field>
 
-      <Field label="Imágenes (URLs)">
-        <div className="space-y-2">
-          {imgs.fields.map((f, i) => (
-            <div key={f.id} className="flex gap-2">
-              <Input
-                {...form.register(`imageUrls.${i}.value`)}
-                placeholder="https://…"
-              />
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => imgs.remove(i)}
-              >
-                ×
-              </Button>
-            </div>
-          ))}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => imgs.append({ value: "" })}
-          >
-            + URL
-          </Button>
-        </div>
+      <Field
+        label="Imágenes"
+        error={form.formState.errors.imageUrls?.message}
+      >
+        <ImageUpload
+          value={form.watch("imageUrls")}
+          onChange={(urls) =>
+            form.setValue("imageUrls", urls, { shouldValidate: true })
+          }
+          folder="products"
+          max={10}
+          onUploadingChange={setUploading}
+        />
       </Field>
 
       <div className="flex gap-2">
-        <Button type="submit" disabled={save.isPending}>
+        <Button type="submit" disabled={save.isPending || uploading}>
           Guardar
         </Button>
         <Button
