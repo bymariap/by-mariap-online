@@ -11,10 +11,10 @@ import { StorageService, S3_CLIENT } from "./storage.service";
       useFactory: (config: ConfigService) =>
         new S3Client({
           region: "auto",
-          endpoint: config.get<string>("R2_ENDPOINT") ?? "",
+          endpoint: config.getOrThrow<string>("R2_ENDPOINT"),
           credentials: {
-            accessKeyId: config.get<string>("R2_ACCESS_KEY_ID") ?? "",
-            secretAccessKey: config.get<string>("R2_SECRET_ACCESS_KEY") ?? "",
+            accessKeyId: config.getOrThrow<string>("R2_ACCESS_KEY_ID"),
+            secretAccessKey: config.getOrThrow<string>("R2_SECRET_ACCESS_KEY"),
           },
         }),
     },
