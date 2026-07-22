@@ -15,6 +15,10 @@ Systematically audit all 13 storefront pages at three viewport widths, producing
 - **No redesign.** We flag broken/awkward responsive behavior; we do not propose visual redesigns or new features.
 - **No cross-browser matrix.** Audit runs in the in-app Chromium browser only. Safari/Firefox-specific quirks are out of scope.
 
+## Audit target
+
+Production: `https://bymariap.com`. This reflects what customers actually see today, including the live catalog and R2-served images.
+
 ## Why live visual QA (not code review)
 
 A code-only review misses defects that look correct in source. Confirmed example: `apps/storefront/src/components/header.tsx:32` marks the entire nav `hidden md:flex` with **no hamburger fallback** — on mobile the navigation simply vanishes, leaving a visitor unable to reach Tienda/Servicios/Galería/etc. The code reads as intentional; only rendering it at 375px reveals the bug. Live QA at real breakpoints is the only reliable method for a customer-facing site.

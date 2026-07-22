@@ -21,3 +21,4 @@ out/
 # Claude Code / Superpowers scratch state
 .claude/
 .superpowers/
+.playwright-mcp/
