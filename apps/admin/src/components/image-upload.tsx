@@ -3,6 +3,8 @@ import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 
+// Reusable single/multiple image upload widget backed by POST /admin/uploads.
+
 const ACCEPTED = ["image/jpeg", "image/png", "image/webp"];
 const MAX_SIZE = 8 * 1024 * 1024;
 
