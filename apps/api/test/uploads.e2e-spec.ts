@@ -4,6 +4,8 @@ import cookieParser from "cookie-parser";
 import request from "supertest";
 import { execSync } from "child_process";
 import path from "path";
+import bcrypt from "bcrypt";
+import { PrismaClient } from "@prisma/client";
 import { AppModule } from "../src/app.module";
 import { StorageService } from "../src/modules/storage/storage.service";
 import { startTestDb } from "./helpers/db";
@@ -11,6 +13,7 @@ import { startTestDb } from "./helpers/db";
 describe("Uploads E2E", () => {
   let app: INestApplication;
   let stopDb: () => Promise<void>;
+  let prisma: PrismaClient;
 
   beforeAll(async () => {
     const db = await startTestDb();
@@ -39,9 +42,23 @@ describe("Uploads E2E", () => {
     app.use(cookieParser());
     app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
     await app.init();
+
+    prisma = new PrismaClient();
+    const customerRole = await prisma.role.findUniqueOrThrow({
+      where: { name: "customer" },
+    });
+    await prisma.user.create({
+      data: {
+        email: "customer@bymariap.com",
+        passwordHash: await bcrypt.hash("customer-pass-123", 12),
+        fullName: "Cliente Test",
+        roleId: customerRole.id,
+      },
+    });
   }, 120_000);
 
   afterAll(async () => {
+    await prisma.$disconnect();
     await app.close();
     await stopDb();
   });
@@ -50,6 +67,14 @@ describe("Uploads E2E", () => {
     const login = await request(app.getHttpServer())
       .post("/auth/login")
       .send({ email: "admin@bymariap.com", password: "admin-pass-123" })
+      .expect(201);
+    return login.headers["set-cookie"] as unknown as string[];
+  }
+
+  async function customerCookies(): Promise<string[]> {
+    const login = await request(app.getHttpServer())
+      .post("/auth/login")
+      .send({ email: "customer@bymariap.com", password: "customer-pass-123" })
       .expect(201);
     return login.headers["set-cookie"] as unknown as string[];
   }
@@ -85,7 +110,10 @@ describe("Uploads E2E", () => {
     expect(res.body.url).toBe("https://cdn.bymariap.com/products/fake.jpg");
   });
 
-  it("rejects a file larger than 8MB", async () => {
+  it("rejects a file larger than 8MB (multer-level early rejection)", async () => {
+    // Now that FileInterceptor's own limit matches MAX_SIZE (8MB), this 9MB
+    // file is rejected by multer itself before it is fully buffered, rather
+    // than by the MaxFileSizeValidator afterward. Same expected 400 outcome.
     const cookies = await adminCookies();
     await request(app.getHttpServer())
       .post("/admin/uploads")
@@ -96,5 +124,22 @@ describe("Uploads E2E", () => {
       })
       .field("folder", "products")
       .expect(400);
+  });
+
+  it("rejects upload from an authenticated user without media:write", async () => {
+    const cookies = await customerCookies();
+    const jpegBytes = Buffer.from(
+      "/9j/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAEAAQDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAf/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAABgj/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABykX//Z",
+      "base64",
+    );
+    await request(app.getHttpServer())
+      .post("/admin/uploads")
+      .set("Cookie", cookies)
+      .attach("file", jpegBytes, {
+        filename: "a.jpg",
+        contentType: "image/jpeg",
+      })
+      .field("folder", "products")
+      .expect(403);
   });
 });

@@ -10,11 +10,13 @@ import {
   ParseFilePipe,
   Post,
   UploadedFile,
+  UseFilters,
   UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { RequirePermissions } from "../../common/decorators/require-permissions.decorator";
 import { StorageService, MediaFolder } from "../storage/storage.service";
+import { MulterPayloadTooLargeFilter } from "./multer-payload-too-large.filter";
 
 const MAX_SIZE = 8 * 1024 * 1024;
 const FOLDERS: MediaFolder[] = ["products", "avatars"];
@@ -27,8 +29,9 @@ export class UploadsController {
 
   @Post("admin/uploads")
   @RequirePermissions("media:write")
+  @UseFilters(MulterPayloadTooLargeFilter)
   @UseInterceptors(
-    FileInterceptor("file", { limits: { fileSize: 20 * 1024 * 1024 } }),
+    FileInterceptor("file", { limits: { fileSize: MAX_SIZE } }),
   )
   async upload(
     @UploadedFile(
