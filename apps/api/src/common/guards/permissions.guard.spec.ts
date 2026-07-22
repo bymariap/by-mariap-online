@@ -17,28 +17,38 @@ describe('PermissionsGuard', () => {
   beforeEach(() => jest.resetAllMocks());
 
   it('passes when no permissions required', () => {
-    reflector.getAllAndOverride.mockReturnValueOnce(undefined);
+    reflector.getAllAndOverride.mockReturnValueOnce(false); // isPublic
+    reflector.getAllAndOverride.mockReturnValueOnce(undefined); // required
     expect(guard.canActivate(ctx({ permissions: [] }))).toBe(true);
   });
 
   it('passes with wildcard *', () => {
-    reflector.getAllAndOverride.mockReturnValueOnce(['products:write']);
+    reflector.getAllAndOverride.mockReturnValueOnce(false); // isPublic
+    reflector.getAllAndOverride.mockReturnValueOnce(['products:write']); // required
     expect(guard.canActivate(ctx({ permissions: ['*'] }))).toBe(true);
   });
 
   it('passes with exact match', () => {
-    reflector.getAllAndOverride.mockReturnValueOnce(['products:write']);
+    reflector.getAllAndOverride.mockReturnValueOnce(false); // isPublic
+    reflector.getAllAndOverride.mockReturnValueOnce(['products:write']); // required
     expect(guard.canActivate(ctx({ permissions: ['products:write'] }))).toBe(true);
   });
 
   it('passes when user has wider scope than required', () => {
-    reflector.getAllAndOverride.mockReturnValueOnce(['appointments:read:own']);
+    reflector.getAllAndOverride.mockReturnValueOnce(false); // isPublic
+    reflector.getAllAndOverride.mockReturnValueOnce(['appointments:read:own']); // required
     expect(guard.canActivate(ctx({ permissions: ['appointments:read'] }))).toBe(true);
   });
 
   it('rejects when missing', () => {
-    reflector.getAllAndOverride.mockReturnValueOnce(['products:write']);
+    reflector.getAllAndOverride.mockReturnValueOnce(false); // isPublic
+    reflector.getAllAndOverride.mockReturnValueOnce(['products:write']); // required
     expect(() => guard.canActivate(ctx({ permissions: ['products:read'] })))
       .toThrow(ForbiddenException);
+  });
+
+  it('passes without checking permissions when route is @Public()', () => {
+    reflector.getAllAndOverride.mockReturnValueOnce(true); // isPublic
+    expect(guard.canActivate(ctx(undefined))).toBe(true);
   });
 });
