@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Person from "@material-symbols/svg-300/outlined/person.svg?react";
 import { CartIconButton } from "./cart-icon-button";
+import { MobileNav } from "./mobile-nav";
 
 const navLinks = [
   { label: "Inicio", href: "/" },
@@ -53,6 +54,7 @@ export function Header() {
             <Person className="h-5 w-5" />
           </Link>
           <CartIconButton />
+          <MobileNav navLinks={navLinks} />
         </div>
       </div>
     </header>
