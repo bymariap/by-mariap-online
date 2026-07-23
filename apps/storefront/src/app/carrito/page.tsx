@@ -59,7 +59,7 @@ export default function CartPage() {
           {cart.data.items.map((item, idx) => (
             <div key={item.id}>
               {idx > 0 && <Separator className="my-0" />}
-              <div className="py-5 flex items-center gap-4">
+              <div className="py-5 flex items-start gap-4">
                 {/* Thumbnail */}
                 <div className="h-16 w-16 shrink-0 rounded-sm overflow-hidden bg-muted">
                   {item.productImageUrl ? (
@@ -75,38 +75,41 @@ export default function CartPage() {
                   )}
                 </div>
 
-                {/* Name + unit price */}
-                <div className="flex-1 min-w-0">
-                  <Link
-                    href={`/productos/${item.productSlug}`}
-                    className="text-sm font-body font-medium text-foreground hover:underline line-clamp-2"
-                  >
-                    {item.productName}
-                  </Link>
-                  <p className="text-xs font-body text-muted-foreground mt-0.5">
-                    {formatCop(item.unitPriceSnapshot)} c/u
-                  </p>
+                {/* Name + controls */}
+                <div className="flex-1 min-w-0 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+                  {/* Name + unit price */}
+                  <div className="flex-1 min-w-0">
+                    <Link
+                      href={`/productos/${item.productSlug}`}
+                      className="text-sm font-body font-medium text-foreground hover:underline line-clamp-2"
+                    >
+                      {item.productName}
+                    </Link>
+                    <p className="text-xs font-body text-muted-foreground mt-0.5">
+                      {formatCop(item.unitPriceSnapshot)} c/u
+                    </p>
+                  </div>
+
+                  {/* Controls cluster: qty + line total + delete */}
+                  <div className="flex items-center gap-4 shrink-0">
+                    <QuantityInput
+                      value={item.quantity}
+                      onChange={(q) =>
+                        update.mutate({ id: item.id, quantity: q })
+                      }
+                    />
+                    <p className="w-20 text-right text-sm font-body font-medium text-foreground shrink-0">
+                      {formatCop(item.lineTotal)}
+                    </p>
+                    <button
+                      onClick={() => remove.mutate(item.id)}
+                      className="p-1.5 text-muted-foreground hover:text-destructive transition-colors shrink-0"
+                      aria-label={`Eliminar ${item.productName}`}
+                    >
+                      <Delete className="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
-
-                {/* Qty stepper */}
-                <QuantityInput
-                  value={item.quantity}
-                  onChange={(q) => update.mutate({ id: item.id, quantity: q })}
-                />
-
-                {/* Line total */}
-                <p className="w-20 text-right text-sm font-body font-medium text-foreground shrink-0">
-                  {formatCop(item.lineTotal)}
-                </p>
-
-                {/* Delete */}
-                <button
-                  onClick={() => remove.mutate(item.id)}
-                  className="p-1.5 text-muted-foreground hover:text-destructive transition-colors shrink-0"
-                  aria-label={`Eliminar ${item.productName}`}
-                >
-                  <Delete className="h-4 w-4" />
-                </button>
               </div>
             </div>
           ))}
