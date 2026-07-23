@@ -90,7 +90,7 @@ export default async function HomePage() {
       {/* ── TRANSFORMACIONES (placeholder) ── */}
       <section id="galeria" className="bg-muted py-24">
         <div className="container space-y-10">
-          <div className="flex items-end justify-between gap-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
             <div className="space-y-2">
               <p className="t-eyebrow">Transformaciones</p>
               <h2 className="t-display text-foreground">
