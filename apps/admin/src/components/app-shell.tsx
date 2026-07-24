@@ -34,7 +34,9 @@ const nav: NavItem[] = [
 export function AppShell() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const visibleNav = user ? nav.filter((n) => n.visible(user)) : [];
+  // TEMP: menú sin restricción por rol para pruebas locales. Revertir antes de commitear.
+  // const visibleNav = user ? nav.filter((n) => n.visible(user)) : [];
+  const visibleNav = nav;
 
   async function handleLogout() {
     await logout();
