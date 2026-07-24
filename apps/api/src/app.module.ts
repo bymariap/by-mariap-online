@@ -41,8 +41,9 @@ import { UploadsModule } from "./modules/uploads/uploads.module";
     UploadsModule,
   ],
   providers: [
-    { provide: APP_GUARD, useClass: JwtAuthGuard },
-    { provide: APP_GUARD, useClass: PermissionsGuard },
+    // TEMP: rutas sin protección para pruebas locales. Revertir antes de commitear.
+    // { provide: APP_GUARD, useClass: JwtAuthGuard },
+    // { provide: APP_GUARD, useClass: PermissionsGuard },
   ],
 })
 export class AppModule {}
